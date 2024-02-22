@@ -1,0 +1,5276 @@
+﻿
+
+
+
+
+' THIS OPEN-SOURCE APPLICATION IS POWERED BY DEVCASE CLASS LIBRARY BY ELEKTRO STUDIOS.
+
+' IF YOU LIKED THIS FREE APPLICATION, THEN PLEASE CONSIDER TO BUY DEVCASE CLASS LIBRARY FOR .NET AT:
+' https://codecanyon.net/item/DevCase-class-library-for-net/19260282
+
+' YOU CAN FIND THESE HELPER METHODS AND A MASSIVE AMOUNT MORE!, 
+' +850 EXTENSION METHODS FOR ALL KIND OF TYPES, CUSTOM USER-CONTROLS, 
+' EVERYTHING FOR THE NEWBIE And THE ADVANCED USER, FOR VB.NET AND C#. 
+
+' DevCase is a utility framework containing new APIs and extensions to the core .NET Framework 
+' to help complete your developer toolbox.
+' It Is a set of general purpose classes provided as easy to consume packages.
+' These utility classes and components provide productivity in day to day software development 
+' mainly focused To WindowsForms. 
+
+' UPDATES OF DevCase ARE MAINTAINED AND RELEASED EVERY MONTH.
+
+
+
+
+
+#Region " Imports "
+
+Imports ScintillaNET
+
+#End Region
+
+#Region " DevCase.ThirdParty.ScintillaNet.Tools.ScintillaNetUtil "
+
+Namespace DevCase.ThirdParty.ScintillaNet.Tools
+
+    Friend NotInheritable Class ScintillaNetUtil
+
+#Region " Private Fields "
+
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <summary>
+        ''' Keeps a collection of the <see cref="Scintilla"/> controls where to 
+        ''' show line numbers. 
+        ''' 
+        ''' See: <see cref="ScintillaNetUtil.AddLineNumbers"/> method.
+        ''' </summary>
+        ''' ----------------------------------------------------------------------------------------------------
+        Private Shared addLineNumbersDict As Dictionary(Of Scintilla, KeyValuePair(Of Integer, Integer))
+
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <summary>
+        ''' Keeps a collection of the <see cref="Scintilla"/> controls where to 
+        ''' supress the print-code for the Control keys pressed in the control.
+        ''' 
+        ''' See: <see cref="ScintillaNetUtil.DisableControlKeysPrint"/> method.
+        ''' </summary>
+        ''' ----------------------------------------------------------------------------------------------------
+        Private Shared disableControlKeysPrintList As List(Of Scintilla)
+
+        Private Shared ReadOnly csKeywords As String =
+    <a>
+abstract
+as
+base
+bool
+break
+bstract
+byte
+case
+catch
+char
+checked
+class
+const
+continue
+custom
+date
+decimal
+default
+delegate
+distinct
+do
+double
+else
+elseif
+enum
+equals
+event
+explicit
+extern
+false
+finally
+fixed
+float
+for
+foreach
+from
+get
+goto
+group
+if
+implicit
+in
+int
+interface
+internal
+into
+is
+join
+let
+lock
+long
+me
+namespace
+new
+null
+object
+operator
+out
+overloads
+overridable
+override
+overrides
+paramarray
+params
+partial
+private
+property
+protected
+public
+readonly
+ref
+ret
+return
+sbyte
+sealed
+select
+shadows
+short
+single
+sizeof
+skip
+stackalloc
+static
+string
+struct
+switch
+synclock
+take
+this
+throw
+true
+try
+trycast
+typeof
+uint
+ulong
+unchecked
+unsafe
+ushort
+using
+var
+virtual
+void
+when
+where
+while
+widening
+writeonly
+</a>.Value
+
+        Private Shared ReadOnly vbKeywords As String =
+    <a>
+debug
+release
+addhandler
+addressof
+aggregate
+alias
+and
+andalso
+ansi
+as
+assembly
+auto
+binary
+boolean
+byref
+byte
+byval
+call
+case
+catch
+cbool
+cbyte
+cchar
+cdate
+cdbl
+cdec
+char
+cint
+class
+clng
+cobj
+compare
+const
+continue
+csbyte
+cshort
+csng
+cstr
+ctype
+cuint
+culng
+cushort
+custom
+date
+decimal
+declare
+default
+delegate
+dim
+directcast
+distinct
+do
+double
+each
+else
+elseif
+end
+endif
+enum
+equals
+erase
+error
+event
+exit
+explicit
+false
+finally
+for
+friend
+from
+function
+get
+gettype
+getxmlnamespace
+global
+gosub
+goto
+group
+handles
+if
+implements
+imports
+in
+inherits
+integer
+interface
+into
+is
+isfalse
+isnot
+istrue
+join
+key
+let
+lib
+like
+long
+loop
+me
+mid
+mod
+module
+mustinherit
+mustoverride
+my
+mybase
+myclass
+namespace
+narrowing
+new
+next
+not
+nothing
+notinheritable
+notoverridable
+object
+of
+off
+on
+operator
+option
+optional
+or
+order
+orelse
+overloads
+overridable
+overrides
+paramarray
+partial
+preserve
+private
+property
+protected
+public
+raiseevent
+readonly
+redim
+rem
+removehandler
+resume
+return
+sbyte
+select
+set
+shadows
+shared
+short
+single
+skip
+static
+step
+stop
+strict
+string
+structure
+sub
+synclock
+take
+text
+then
+throw
+to
+true
+try
+trycast
+typeof
+uinteger
+ulong
+unicode
+until
+ushort
+using
+variant
+wend
+when
+where
+while
+widening
+with
+withevents
+writeonly
+xor
+</a>.Value
+
+        Private Shared ReadOnly vbLiterals As String =
+    <a>
+!
+#
+%
+@
+&amp;
+i
+d
+f
+l
+r
+s
+ui
+ul
+us
+</a>.Value
+
+        Private Shared ReadOnly vbOther As String = "_" ' line-break.
+
+        Private Shared ReadOnly netTypeNames As String =
+    <a>
+abandonedmutexexception
+accessibleobject
+accesskeypressedeventargs
+accesskeypressedeventhandler
+accessrule
+accesstext
+accessviolationexception
+action
+actionerror
+activatedclienttypeentry
+activatedservicetypeentry
+activationarguments
+activedesignereventargs
+activedesignereventhandler
+addchildaction
+addingneweventargs
+addingneweventhandler
+addingnewitemeventargs
+adjustablearrowcap
+adornedelementplaceholder
+adornerdecorator
+adornerpanel
+aescryptoserviceprovider
+aesmanaged
+aggregateexception
+allmembershipcondition
+alternateview
+alternationconverter
+ambientlight
+ambientproperties
+ambientpropertyvalue
+ambiguousmatchexception
+annotation
+annotationauthorchangedeventargs
+annotationauthorchangedeventhandler
+annotationdocumentpaginator
+annotationresource
+annotationresourcechangedeventargs
+annotationresourcechangedeventhandler
+annotationservice
+anonymouspipe
+anonymouspipeclientstream
+anonymouspipeserverstream
+appdomaininitializer
+appdomainmanager
+appdomainsetup
+appdomainunloadedexception
+application
+applicationactivator
+applicationbase
+applicationcontext
+applicationdirectory
+applicationdirectorymembershipcondition
+applicationexception
+applicationid
+applicationidentity
+applicationsecurityinfo
+applicationsettingsgroup
+applicationtrust
+applicationwrapper
+appsettingsreader
+appsettingssection
+arcsegment
+argumentexception
+argumentnullexception
+argumentoutofrangeexception
+arithmeticexception
+array
+arrayconverter
+arrayextension
+arraylist
+arraytypemismatchexception
+asciiencoding
+asnencodeddata
+asnencodeddatacollection
+aspnethostingpermission
+assembly
+assemblyinfo
+assemblyloadeventargs
+assemblyloadeventhandler
+assemblyname
+assemblynameproxy
+asynccallback
+asynccompletedeventargs
+asynccompletedeventhandler
+asynccontentloadedeventargs
+asynclocal
+attachablememberidentifier
+attachment
+attributecollection
+auditrule
+authenticationexception
+authenticationmoduleelement
+authenticationmoduleelementcollection
+authenticationmodulessection
+authenticationschemeselector
+authorization
+authorizationrulecollection
+autocompletestringcollection
+automationeventargs
+automationeventhandler
+automationpropertychangedeventargs
+automationpropertychangedeventhandler
+autoresetevent
+autoresizedeventargs
+autoresizedeventhandler
+axisanglerotation3d
+backease
+backgroundworker
+badimageformatexception
+baml2006reader
+bamllocalizableresource
+bamllocalizableresourcekey
+bamllocalizationdictionary
+bamllocalizer
+bamllocalizererrornotifyeventhandler
+barrierpostphaseexception
+basecollection
+beginstoryboard
+bevelbitmapeffect
+beziersegment
+binaryclientformattersink
+binaryclientformattersinkprovider
+binaryformatter
+binaryreader
+binaryserverformattersink
+binaryserverformattersinkprovider
+binarywriter
+binding
+bindingcompleteeventargs
+bindingcompleteeventhandler
+bindingcontext
+bindinggroup
+bindinglist
+bindinglistcollectionview
+bindingmanagerbase
+bindingmanagerdataerroreventargs
+bindingmanagerdataerroreventhandler
+bindingnavigator
+bindingsource
+bindipendpoint
+bitarray
+bitmap
+bitmapcache
+bitmapcachebrush
+bitmapdata
+bitmapdescriptioninfo
+bitmapeffectcollection
+bitmapeffectgroup
+bitmapeffectinput
+bitmapimage
+bitmapmetadata
+bitmapmetadatablob
+bitmappalette
+blockelement
+blockingcollection
+blockuicontainer
+blurbitmapeffect
+blureffect
+bmpbitmapdecoder
+bmpbitmapencoder
+booleananimationusingkeyframes
+booleanconverter
+booleankeyframecollection
+booleanswitch
+booleantovisibilityconverter
+boolilistconverter
+booltovisibilityconverter
+border
+bordergapmaskconverter
+bounceease
+brush
+brushconverter
+brushvalueserializer
+bstrwrapper
+bufferedgraphicscontext
+bufferedstream
+builtinroleconverter
+bulletdecorator
+button
+buttonautomationpeer
+bypasselement
+bypasselementcollection
+byteanimation
+byteanimationusingkeyframes
+byteconverter
+bytekeyframecollection
+cachedbitmap
+cachemodeconverter
+cachemodevalueserializer
+cachevirtualitemseventargs
+cachevirtualitemseventhandler
+calendar
+calendarautomationpeer
+calendarblackoutdatescollection
+calendarbutton
+calendarbuttonautomationpeer
+calendardaterange
+calendardaybutton
+calendaritem
+calendarmodechangedeventargs
+callbackvalidator
+callconvcdecl
+callconvfastcall
+callconvstdcall
+callconvthiscall
+callinfo
+canceleventargs
+canceleventhandler
+cancellationtokensource
+canexecuteroutedeventhandler
+cannotunloadappdomainexception
+cantstartsingleinstanceexception
+canvas
+caseinsensitivecomparer
+caseinsensitivehashcodeprovider
+categorynamecollection
+channeldatastore
+charactermetrics
+charanimationusingkeyframes
+charconverter
+charilistconverter
+charkeyframecollection
+checkbox
+checkboxautomationpeer
+checkedlistbox
+checkoutexception
+chineselunisolarcalendar
+circleease
+claim
+claimsidentity
+claimsprincipal
+classicborderdecorator
+cleanupvirtualizeditemeventargs
+cleanupvirtualizeditemeventhandler
+clearcollectionpropertyaction
+clearpropertyaction
+clientchannelsinkstack
+clientsettingssection
+clientsponsor
+clientwebsocket
+clock
+closesurfacerequestinfo
+closure
+clrobjectedgegenerator
+cngalgorithm
+cngalgorithmgroup
+cngkeyblobformat
+cngkeycreationparameters
+cngpropertycollection
+cngprovider
+cnguipolicy
+codeargumentreferenceexpression
+codearraycreateexpression
+codearrayindexerexpression
+codeassignstatement
+codeattacheventstatement
+codeattributeargument
+codeattributeargumentcollection
+codeattributedeclaration
+codeattributedeclarationcollection
+codebasereferenceexpression
+codebinaryoperatorexpression
+codecastexpression
+codecatchclause
+codecatchclausecollection
+codechecksumpragma
+codecomment
+codecommentstatement
+codecommentstatementcollection
+codecompileunit
+codeconditionstatement
+codeconnectaccess
+codeconstructor
+codedefaultvalueexpression
+codedelegatecreateexpression
+codedelegateinvokeexpression
+codedirectionexpression
+codedirective
+codedirectivecollection
+codeentrypointmethod
+codeeventreferenceexpression
+codeexpression
+codeexpressioncollection
+codeexpressionstatement
+codefieldreferenceexpression
+codegeneratoroptions
+codegotostatement
+codeidentifier
+codeidentifiers
+codeindexerexpression
+codeiterationstatement
+codelabeledstatement
+codelinepragma
+codememberevent
+codememberfield
+codemembermethod
+codememberproperty
+codemethodinvokeexpression
+codemethodreferenceexpression
+codemethodreturnstatement
+codenamespace
+codenamespacecollection
+codenamespaceimport
+codenamespaceimportcollection
+codeobject
+codeobjectcreateexpression
+codeparameterdeclarationexpression
+codeparameterdeclarationexpressioncollection
+codeprimitiveexpression
+codepropertyreferenceexpression
+codepropertysetvaluereferenceexpression
+coderegiondirective
+coderemoveeventstatement
+codesnippetcompileunit
+codesnippetexpression
+codesnippetstatement
+codesnippettypemember
+codestatement
+codestatementcollection
+codethisreferenceexpression
+codethrowexceptionstatement
+codetrycatchfinallystatement
+codetypeconstructor
+codetypedeclaration
+codetypedeclarationcollection
+codetypedelegate
+codetypemember
+codetypemembercollection
+codetypeofexpression
+codetypeparameter
+codetypeparametercollection
+codetypereference
+codetypereferencecollection
+codetypereferenceexpression
+codevariabledeclarationstatement
+codevariablereferenceexpression
+coercevaluecallback
+collection
+collectionchangeeventargs
+collectionchangeeventhandler
+collectioncontainer
+collectionconverter
+collectionelementvalue
+collectionitemmutator
+collectionobjectadapter
+collectionrequestinfo
+collectionresponse
+collectionsutil
+collectionsynchronizationcallback
+collectionview
+collectionviewsource
+coloranimation
+coloranimationusingkeyframes
+colorblend
+colorcontext
+colorconvertedbitmap
+colorconvertedbitmapextension
+colorconverter
+colordialog
+colorkeyframecollection
+colormap
+colormatrix
+columnclickeventargs
+columnclickeventhandler
+columndefinition
+columnheader
+columnheaderconverter
+columnreorderedeventargs
+columnreorderedeventhandler
+columnstyle
+columnwidthchangedeventargs
+columnwidthchangedeventhandler
+columnwidthchangingeventargs
+columnwidthchangingeventhandler
+com2variant
+comawareeventinfo
+combinedgeometry
+combobox
+comboboxautomationpeer
+comboboxitem
+comexception
+commadelimitedstringcollection
+commadelimitedstringcollectionconverter
+commandbinding
+commandbindingcollection
+commandconverter
+commandid
+commonace
+commondialog
+commonsecuritydescriptor
+commontransportkeys
+comparer
+compilererror
+compilererrorcollection
+compilerparameters
+compilerresults
+component
+componentchangedeventargs
+componentchangedeventhandler
+componentchangingeventargs
+componentchangingeventhandler
+componentcollection
+componentconverter
+componenteditorform
+componenteditorpage
+componenteventargs
+componenteventhandler
+componentrenameeventargs
+componentrenameeventhandler
+componentresourcekey
+componentresourcekeyconverter
+componentresourcemanager
+compositecollection
+compoundace
+computerinfo
+concurrentbag
+concurrentexclusiveschedulerpair
+concurrentqueue
+concurrentstack
+conditioncollection
+conditionunfreezer
+configurationelementproperty
+configurationerrorsexception
+configurationexception
+configurationfilemap
+configurationpermission
+configurationproperty
+configurationpropertycollection
+configurationsectiongroup
+configxmldocument
+connectionmanagementelement
+connectionmanagementelementcollection
+connectionmanagementsection
+connectionstringsettings
+connectionstringsettingscollection
+connectionstringssection
+connecttolivetreeaction
+consoleapplicationbase
+consolecanceleventhandler
+consoletracelistener
+constructioncall
+constructionresponse
+containercontrol
+containeruielement3d
+containervisual
+contentcontrol
+contentdisposition
+contentelement
+contentelementautomationpeer
+contentgrant
+contentlocator
+contentlocatorgroup
+contentlocatorpart
+contentpresenter
+contentsresizedeventargs
+contentsresizedeventhandler
+contentuser
+context
+contextcallback
+contextmarshalexception
+contextmenu
+contextmenuautomationpeer
+contextmenueventhandler
+contextmenustrip
+contextstack
+contextvalue
+contractfailedeventargs
+control
+controlbindingscollection
+controlchars
+controleventargs
+controleventhandler
+controltemplate
+converteventargs
+converteventhandler
+cookie
+cookiecollection
+cookiecontainer
+cookieexception
+cornerradiusconverter
+countdownevent
+countercreationdata
+countercreationdatacollection
+counterset
+createarrayaction
+createinstanceaction
+createparams
+createsurfacerequestinfo
+createsurfaceresponseinfo
+credentialcache
+croppedbitmap
+crossappdomaindelegate
+crosscontextdelegate
+cryptoconfig
+cryptographicexception
+cryptographicunexpectedoperationexception
+cryptokeyaccessrule
+cryptokeyauditrule
+cryptokeysecurity
+cryptostream
+csharpcodeprovider
+cspkeycontainerinfo
+cspparameters
+cubicease
+cultureinfo
+cultureinfoconverter
+cultureinfoietflanguagetagconverter
+culturenotfoundexception
+culturespecificcharacterbufferrange
+currencywrapper
+currentchangingeventargs
+currentchangingeventhandler
+cursor
+cursorconverter
+customace
+customattributebuilder
+customattributeformatexception
+customlinecap
+custompopupplacementcallback
+d3dimage
+dashstyle
+datacontractjsonserializer
+datacontractjsonserializersettings
+datacontractserializer
+datacontractserializersection
+datacontractserializersettings
+dataerrorschangedeventargs
+dataerrorvalidationrule
+dataformat
+datagrid
+datagridautogeneratingcolumneventargs
+datagridautomationpeer
+datagridbeginningediteventargs
+datagridboolcolumn
+datagridcell
+datagridcellautomationpeer
+datagridcellclipboardeventargs
+datagridcelleditendingeventargs
+datagridcellitemautomationpeer
+datagridcellspanel
+datagridcellspresenter
+datagridcheckboxcolumn
+datagridcolumneventargs
+datagridcolumnheader
+datagridcolumnheaderautomationpeer
+datagridcolumnheaderitemautomationpeer
+datagridcolumnheaderspresenter
+datagridcolumnheaderspresenterautomationpeer
+datagridcolumnreorderingeventargs
+datagridcolumnstyle
+datagridcomboboxcolumn
+datagriddetailspresenter
+datagriddetailspresenterautomationpeer
+datagridheaderborder
+datagridhyperlinkcolumn
+datagriditemautomationpeer
+datagridlengthconverter
+datagridpreferredcolumnwidthtypeconverter
+datagridpreparingcellforediteventargs
+datagridrow
+datagridrowautomationpeer
+datagridrowclipboardeventargs
+datagridrowdetailseventargs
+datagridroweditendingeventargs
+datagridroweventargs
+datagridrowheader
+datagridrowheaderautomationpeer
+datagridrowspresenter
+datagridsortingeventargs
+datagridsortingeventhandler
+datagridtablestyle
+datagridtemplatecolumn
+datagridtextbox
+datagridtextboxcolumn
+datagridtextcolumn
+datagridview
+datagridviewadvancedborderstyle
+datagridviewautosizecolumnmodeeventargs
+datagridviewautosizecolumnmodeeventhandler
+datagridviewautosizecolumnsmodeeventargs
+datagridviewautosizecolumnsmodeeventhandler
+datagridviewautosizemodeeventargs
+datagridviewautosizemodeeventhandler
+datagridviewbindingcompleteeventargs
+datagridviewbindingcompleteeventhandler
+datagridviewbuttoncell
+datagridviewbuttoncolumn
+datagridviewcellcanceleventargs
+datagridviewcellcanceleventhandler
+datagridviewcellcollection
+datagridviewcellcontextmenustripneededeventargs
+datagridviewcellcontextmenustripneededeventhandler
+datagridviewcellerrortextneededeventhandler
+datagridviewcelleventargs
+datagridviewcelleventhandler
+datagridviewcellformattingeventargs
+datagridviewcellformattingeventhandler
+datagridviewcellmouseeventargs
+datagridviewcellmouseeventhandler
+datagridviewcellpaintingeventargs
+datagridviewcellpaintingeventhandler
+datagridviewcellparsingeventargs
+datagridviewcellparsingeventhandler
+datagridviewcellstatechangedeventargs
+datagridviewcellstatechangedeventhandler
+datagridviewcellstyle
+datagridviewcellstylecontentchangedeventhandler
+datagridviewcellstyleconverter
+datagridviewcelltooltiptextneededeventhandler
+datagridviewcellvalidatingeventhandler
+datagridviewcellvalueeventargs
+datagridviewcellvalueeventhandler
+datagridviewcheckboxcell
+datagridviewcheckboxcolumn
+datagridviewcolumn
+datagridviewcolumncollection
+datagridviewcolumndividerdoubleclickeventargs
+datagridviewcolumndividerdoubleclickeventhandler
+datagridviewcolumneventargs
+datagridviewcolumneventhandler
+datagridviewcolumnheadercell
+datagridviewcolumnstatechangedeventargs
+datagridviewcolumnstatechangedeventhandler
+datagridviewcomboboxcell
+datagridviewcomboboxcolumn
+datagridviewcomboboxeditingcontrol
+datagridviewdataerroreventargs
+datagridviewdataerroreventhandler
+datagridvieweditingcontrolshowingeventargs
+datagridvieweditingcontrolshowingeventhandler
+datagridviewelement
+datagridviewheadercell
+datagridviewimagecell
+datagridviewimagecolumn
+datagridviewlinkcell
+datagridviewlinkcolumn
+datagridviewrow
+datagridviewrowcanceleventargs
+datagridviewrowcanceleventhandler
+datagridviewrowcollection
+datagridviewrowcontextmenustripneededeventargs
+datagridviewrowcontextmenustripneededeventhandler
+datagridviewrowdividerdoubleclickeventargs
+datagridviewrowdividerdoubleclickeventhandler
+datagridviewrowerrortextneededeventhandler
+datagridviewroweventargs
+datagridviewroweventhandler
+datagridviewrowheadercell
+datagridviewrowheightinfoneededeventhandler
+datagridviewrowheightinfopushedeventhandler
+datagridviewrowpostpainteventargs
+datagridviewrowpostpainteventhandler
+datagridviewrowprepainteventargs
+datagridviewrowprepainteventhandler
+datagridviewrowsaddedeventargs
+datagridviewrowsaddedeventhandler
+datagridviewrowsremovedeventargs
+datagridviewrowsremovedeventhandler
+datagridviewrowstatechangedeventargs
+datagridviewrowstatechangedeventhandler
+datagridviewsortcompareeventargs
+datagridviewsortcompareeventhandler
+datagridviewtextboxcell
+datagridviewtextboxcolumn
+datagridviewtextboxeditingcontrol
+datagridviewtopleftheadercell
+datamisalignedexception
+dataobject
+dataobjectcopyingeventargs
+dataobjectcopyingeventhandler
+dataobjectpastingeventargs
+dataobjectpastingeventhandler
+dataobjectsettingdataeventargs
+dataobjectsettingdataeventhandler
+datareceivedeventhandler
+dataset
+datatable
+datatemplate
+datatemplatekey
+datatemplateselector
+datatrigger
+dateboldeventhandler
+datepicker
+datepickerautomationpeer
+datepickerdatevalidationerroreventargs
+datepickertextbox
+daterangeeventargs
+daterangeeventhandler
+datetime
+datetimeconverter
+datetimeformat
+datetimeformatinfo
+datetimeoffsetconverter
+datetimepicker
+datetimeserializationsection
+datetimevalueserializer
+daylighttime
+debugger
+decimalanimation
+decimalanimationusingkeyframes
+decimalconverter
+decimalkeyframecollection
+declaredtypeelement
+declaredtypeelementcollection
+decoderexceptionfallback
+decoderexceptionfallbackbuffer
+decoderfallbackexception
+decoderreplacementfallback
+decoderreplacementfallbackbuffer
+decorator
+defaultproxysection
+defaultsection
+defaulttracelistener
+defaultvalidator
+deferrablecontentconverter
+deflatestream
+delegate
+delegatecommand
+delimitedlisttracelistener
+dependencyobject
+dependencyobjectedgegenerator
+dependencypropertychangedeventhandler
+dependencypropertyconverter
+descryptoserviceprovider
+designercollection
+designereventargs
+designereventhandler
+designernamespaceresolveeventargs
+designertransactioncloseeventargs
+designertransactioncloseeventhandler
+designerverb
+designerverbcollection
+designtimelicensecontext
+diagnosticsconfigurationhandler
+dialogresultconverter
+dictionary
+dictionaryentrymutator
+dictionarysectionhandler
+diffusematerial
+directionallight
+directoryinfo
+directorynotfoundexception
+directorysearcher
+directorysecurity
+discretebooleankeyframe
+discretebytekeyframe
+discretecharkeyframe
+discretecolorkeyframe
+discretedecimalkeyframe
+discretedoublekeyframe
+discreteint16keyframe
+discreteint32keyframe
+discreteint64keyframe
+discretematrixkeyframe
+discreteobjectkeyframe
+discretepoint3dkeyframe
+discretepointkeyframe
+discretequaternionkeyframe
+discreterectkeyframe
+discreterotation3dkeyframe
+discretesinglekeyframe
+discretesizekeyframe
+discretestringkeyframe
+discretethicknesskeyframe
+discretevector3dkeyframe
+discretevectorkeyframe
+discretionaryacl
+dispatcherframe
+dispatcherhookeventargs
+dispatcherhookeventhandler
+dispatcheroperationcallback
+dispatchersynchronizationcontext
+dispatchertimer
+dispatcherunhandledexceptioneventhandler
+dispatcherunhandledexceptionfiltereventhandler
+dispatchervisualtreecontext
+dispatchwrapper
+dividebyzeroexception
+dllnotfoundexception
+dnsendpoint
+dnspermission
+dockpanel
+dockprovider
+docobjhost
+documentautomationpeer
+documentpage
+documentpageview
+documentpageviewautomationpeer
+documentreference
+documentviewer
+documentviewerautomationpeer
+documentviewerbaseautomationpeer
+domainupdown
+doubleanimation
+doubleanimationusingkeyframes
+doubleanimationusingpath
+doublecollection
+doublecollectionconverter
+doublecollectionvalueserializer
+doubleconverter
+doubleilistconverter
+doublekeyframecollection
+downloaddatacompletedeventhandler
+downloadprogresschangedeventhandler
+downloadstringcompletedeventhandler
+doworkeventargs
+doworkeventhandler
+dpapiprotectedconfigurationprovider
+dragcompletedeventargs
+dragcompletedeventhandler
+dragdeltaeventargs
+dragdeltaeventhandler
+drageventargs
+drageventhandler
+dragstartedeventargs
+dragstartedeventhandler
+drawingattributes
+drawingattributesreplacedeventargs
+drawingattributesreplacedeventhandler
+drawingbrush
+drawingcollection
+drawinggroup
+drawingimage
+drawingvisual
+drawitemeventargs
+drawitemeventhandler
+drawlistviewcolumnheadereventargs
+drawlistviewcolumnheadereventhandler
+drawlistviewitemeventargs
+drawlistviewitemeventhandler
+drawlistviewsubitemeventargs
+drawlistviewsubitemeventhandler
+drawtooltipeventargs
+drawtooltipeventhandler
+drawtreenodeeventargs
+drawtreenodeeventhandler
+driveinfo
+drivenotfoundexception
+dropshadowbitmapeffect
+dropshadoweffect
+dsacryptoserviceprovider
+dsasignaturedeformatter
+dsasignatureformatter
+duplicatewaitobjectexception
+durationconverter
+dynamicmetaobject
+dynamicmethod
+dynamicrenderer
+dynamicresourceextension
+dynamicresourceextensionconverter
+easingbytekeyframe
+easingcolorkeyframe
+easingdecimalkeyframe
+easingdoublekeyframe
+easingint16keyframe
+easingint32keyframe
+easingint64keyframe
+easingpoint3dkeyframe
+easingpointkeyframe
+easingquaternionkeyframe
+easingrectkeyframe
+easingrotation3dkeyframe
+easingsinglekeyframe
+easingsizekeyframe
+easingthicknesskeyframe
+easingvector3dkeyframe
+easingvectorkeyframe
+ecdiffiehellmancng
+ecdsacng
+elapsedeventhandler
+elasticease
+elementinteractionevent
+elementlocalizability
+elementnotavailableexception
+elementnotenabledexception
+ellipse
+ellipsegeometry
+ellipsestylusshape
+embossbitmapeffect
+emissivematerial
+emptyrequestinfo
+emptyresponse
+encoderexceptionfallback
+encoderexceptionfallbackbuffer
+encoderfallbackexception
+encoderparameter
+encoderparameters
+encoderreplacementfallback
+encoderreplacementfallbackbuffer
+encodingprovider
+endofstreamexception
+enterpriseserviceshelper
+entrypointnotfoundexception
+entrywritteneventargs
+entrywritteneventhandler
+enumconverter
+enumerableexecutor
+enumerablequery
+enumsresponse
+enumtype
+environmentpermission
+erroreventargs
+erroreventhandler
+errorprovider
+errorwrapper
+eventargs
+eventdescriptorcollection
+eventhandler
+eventhandlerlist
+eventinstance
+eventlog
+eventlogconfiguration
+eventlogexception
+eventloginvaliddataexception
+eventlognotfoundexception
+eventlogpermission
+eventlogpermissionentry
+eventlogpropertyselector
+eventlogproviderdisabledexception
+eventlogquery
+eventlogreader
+eventlogreadingexception
+eventlogsession
+eventlogtracelistener
+eventlogwatcher
+eventprivatekey
+eventprovider
+eventprovidertracelistener
+eventregistrationtokentable
+eventroute
+eventschematracelistener
+eventsetter
+eventsetterhandlerconverter
+eventsource
+eventsourcecreationdata
+eventsourceexception
+eventstab
+eventtrigger
+eventtypefilter
+eventwaithandle
+eventwaithandleaccessrule
+eventwaithandleauditrule
+eventwaithandlesecurity
+exception
+exceptionvalidationrule
+execonfigurationfilemap
+executedroutedeventhandler
+executexamlactionsrequestinfo
+executionengineexception
+exiteventhandler
+expandableobjectconverter
+expandcollapseprovider
+expander
+expanderautomationpeer
+expandoobject
+exponentialease
+exportoptions
+expressionconverter
+extendedprotectionpolicy
+extendedprotectionpolicyelement
+extendedprotectionpolicytypeconverter
+externalexception
+familytypeface
+fieldaccessexception
+figurelengthconverter
+figurestructure
+filecodegroup
+filedialogcustomplace
+filedialogcustomplacescollection
+filedialogpermission
+fileformatexception
+fileinfo
+fileiopermission
+fileloadexception
+filelogtracelistener
+filenotfoundexception
+filesecurity
+filestream
+filestyleuriparser
+filesystem
+filesystemaccessrule
+filesystemauditrule
+filesystemeventargs
+filesystemeventhandler
+filesystemwatcher
+filtereventhandler
+firstchanceexceptioneventargs
+firstmatchcodegroup
+fixeddocument
+fixeddocumentsequence
+fixedpage
+fixedpageautomationpeer
+floater
+flowdocument
+flowdocumentpageviewer
+flowdocumentpageviewerautomationpeer
+flowdocumentreader
+flowdocumentreaderautomationpeer
+flowdocumentscrollviewer
+flowdocumentscrollviewerautomationpeer
+flowlayoutpanel
+folderbrowserdialog
+font
+fontconverter
+fontdialog
+fontembeddingmanager
+fontfamily
+fontfamilyconverter
+fontfamilymap
+fontfamilyvalueserializer
+fontsizeconverter
+fontstretchconverter
+fontstyleconverter
+fontweightconverter
+form
+formatconvertedbitmap
+formatexception
+formattedtext
+formatterconverter
+formclosedeventargs
+formclosedeventhandler
+formclosingeventargs
+formclosingeventhandler
+formcollection
+fragmentnavigationeventhandler
+frameautomationpeer
+framedimension
+frameworkcontentelement
+frameworkcontentelementautomationpeer
+frameworkelement
+frameworkelementautomationpeer
+frameworkelementfactory
+frameworkname
+frameworkpropertymetadata
+freezablecollection
+freezableunfreezer
+frombase64transform
+ftpcachepolicyelement
+ftpstyleuriparser
+func
+gacidentitypermission
+gacinstalled
+gacmembershipcondition
+generaltransform3dcollection
+generaltransform3dgroup
+generaltransformcollection
+generaltransformgroup
+generatedinternaltypehelper
+genericenumconverter
+genericidentity
+genericprincipal
+genericrootautomationpeer
+genericuriparser
+geometrycollection
+geometryconverter
+geometrydrawing
+geometrygroup
+geometryhittestparameters
+geometryhittestresult
+geometrymodel3d
+geometryvalueserializer
+gesturerecognizer
+getchildaction
+getdictionaryentryaction
+getpagecompletedeventargs
+getpagecompletedeventhandler
+getpagenumbercompletedeventargs
+getpagenumbercompletedeventhandler
+getpagerootcompletedeventhandler
+getpropertyaction
+gifbitmapdecoder
+gifbitmapencoder
+givefeedbackeventargs
+givefeedbackeventhandler
+globalproxyselection
+glyphrun
+glyphrundrawing
+glyphtypeface
+gopherstyleuriparser
+gradientstop
+gradientstopcollection
+graphbuildingcontext
+graphics
+graphicspath
+graphicspathiterator
+gregoriancalendar
+griditemprovider
+gridlengthconverter
+gridprovider
+gridsplitter
+gridsplitterautomationpeer
+gridview
+gridviewautomationpeer
+gridviewcolumn
+gridviewcolumncollection
+gridviewcolumnheader
+gridviewcolumnheaderautomationpeer
+gridviewheaderrowpresenter
+gridviewheaderrowpresenterautomationpeer
+gridviewitemautomationpeer
+gridviewrowpresenter
+groupbox
+groupboxautomationpeer
+groupdescriptionselectorcallback
+groupitem
+groupitemautomationpeer
+groupstyle
+groupstyleselector
+guid
+guidconverter
+guidelineset
+gzipstream
+handlecollector
+handledeventargs
+handledeventhandler
+handledmouseeventargs
+hashmembershipcondition
+hashset
+hashtable
+hatchbrush
+headeredcontentcontrol
+headereditemscontrol
+headerhandler
+hebrewcalendar
+helpeventargs
+helpeventhandler
+helpprovider
+hierarchicaldatatemplate
+hijricalendar
+hittestfiltercallback
+hittestresultcallback
+hmacmd5
+hmacripemd160
+hmacsha1
+hmacsha256
+hmacsha384
+hmacsha512
+hostedwindowwrapper
+hostexecutioncontext
+hostexecutioncontextmanager
+hostprotectionexception
+hostsecuritymanager
+hostservices
+hostvisual
+hscrollbar
+hscrollproperties
+htmldocument
+htmlelement
+htmlelementerroreventhandler
+htmlelementeventhandler
+httpcachepolicyelement
+httpchannel
+httpclientchannel
+httpcontinuedelegate
+httplistener
+httplistenerbasicidentity
+httplistenerelement
+httplistenerexception
+httplistenertimeoutselement
+httpremotinghandler
+httpremotinghandlerfactory
+httprequestcachepolicy
+httpserverchannel
+httpstyleuriparser
+httpversion
+httpwebrequest
+httpwebrequestelement
+httpwebresponse
+hwndsource
+hwndsourcehook
+hwndtarget
+hybriddictionary
+hyperlink
+hyperlinkautomationpeer
+iappdomainsetup
+iasyncresult
+ibindablecomponent
+ibuttoncontrol
+icloneable
+icollectdatta
+icollection
+icolumnmapping
+icolumnmappingcollection
+icommandexecutor
+icomparable
+icomparer
+icomponent
+icomponenteditorpagesite
+icon
+iconbitmapdecoder
+iconconverter
+icontainercontrol
+iconvertible
+icurrencymanagerprovider
+icustomformatter
+idataadapter
+idatagridcolumnstyleeditingnotificationservice
+idatagrideditingservice
+idatagridvieweditingcell
+idatagridvieweditingcontrol
+idataobject
+idataparameter
+idataparametercollection
+idatareader
+idatarecord
+idbcommand
+idbconnection
+idbdataadapter
+idbdataparameter
+idbtransaction
+identitynotmappedexception
+identityreferencecollection
+idevicecontext
+idictionary
+idictionaryenumerator
+idisposable
+idnelement
+idnmapping
+idroptarget
+ienumerable
+ienumerator
+iequalitycomparer
+iequatable
+ifeaturesupport
+ifilereaderservice
+iformatprovider
+iformattable
+iformatter
+ignoresection
+ignoresectionhandler
+igroupping
+ihashcodeprovider
+ilist
+ilookup
+image
+imageattributes
+imageautomationpeer
+imagebrush
+imageconverter
+imagedrawing
+imageformat
+imageformatconverter
+imageindexconverter
+imagekeyconverter
+imagelist
+imagesourceconverter
+imagesourcevalueserializer
+imessagefilter
+importcontext
+importoptions
+inappmenu
+inappmenucommandevent
+inappmenustaterequestinfo
+incompleteinitialization
+indentedtextwriter
+indexoutofrangeexception
+inertiaexpansionbehavior
+inertiarotationbehavior
+inertiatranslationbehavior
+infiniteintconverter
+infinitetimespanconverter
+initializingnewitemeventargs
+initializingnewitemeventhandler
+inkcanvas
+inkcanvasautomationpeer
+inkcanvasgestureeventargs
+inkcanvasgestureeventhandler
+inkcanvasselectionchangingeventhandler
+inkcanvasselectioneditingeventhandler
+inkcanvasstrokecollectedeventargs
+inkcanvasstrokecollectedeventhandler
+inkcanvasstrokeerasingeventhandler
+inkcanvasstrokesreplacedeventhandler
+inkpresenter
+inkpresenterautomationpeer
+inlineuicontainer
+inotifypropertychanged
+inputbinding
+inputbindingcollection
+inputeventargs
+inputeventhandler
+inputgesturecollection
+inputlanguagechangedeventargs
+inputlanguagechangedeventhandler
+inputlanguagechangingeventargs
+inputlanguagechangingeventhandler
+inputlanguageeventhandler
+inputmethodstatechangedeventhandler
+inputscope
+inputscopeconverter
+inputscopename
+inputscopenameconverter
+inputscopephrase
+installedfontcollection
+instancebuildingresult
+instancedata
+instancedatacollection
+instancedatacollectioncollection
+instancedescriptor
+instancenotfoundexception
+instrumentationbaseexception
+instrumentationexception
+insufficientexecutionstackexception
+insufficientmemoryexception
+int16
+int16animation
+int16animationusingkeyframes
+int16converter
+int16keyframecollection
+int32
+int32animation
+int32animationusingkeyframes
+int32collection
+int32collectionconverter
+int32collectionvalueserializer
+int32converter
+int32keyframecollection
+int32rectconverter
+int32rectvalueserializer
+int64
+int64animation
+int64animationusingkeyframes
+int64converter
+int64keyframecollection
+integervalidator
+internalbufferoverflowexception
+internalconfigeventargs
+internalconfigeventhandler
+internalerrorexception
+internalmessagewrapper
+internalremotingservices
+internalrm
+intptr
+intranetzonecredentialpolicy
+invalidasynchronousstateexception
+invalidateeventargs
+invalidateeventhandler
+invalidcastexception
+invalidcomobjectexception
+invalidcredentialexception
+invaliddatacontractexception
+invaliddataexception
+invalidenumargumentexception
+invalidfiltercriteriaexception
+invalidolevarianttypeexception
+invalidoperationexception
+invalidprinterexception
+invalidprogramexception
+invalidsignatureeventhandler
+invalidtimezoneexception
+invalidwmpversionexception
+invokeprovider
+invoketestmethodinfo
+invoketestmethodresult
+iobservable
+iobserver
+iocompletioncallback
+ioexception
+iorderedenumerable
+iorderedqueryable
+ipaddress
+ipcchannel
+ipcclientchannel
+ipcserverchannel
+ipendpoint
+iphostentry
+ipv6element
+ipv6multicastoption
+iqueryable
+iqueryprovider
+iriparsingelement
+iserializable
+iserviceprovider
+isinvisualtreechangeeventargs
+isolatedstorageexception
+isolatedstoragefilepermission
+isolatedstoragefilestream
+istructuralcomparable
+istructuralequatable
+itablemapping
+itablemappingcollection
+itemchangedeventhandler
+itemcheckedeventargs
+itemcheckedeventhandler
+itemcheckeventargs
+itemcheckeventhandler
+itemcontainerprovider
+itemcontainertemplate
+itemcontainertemplatekey
+itemdrageventargs
+itemdrageventhandler
+itempropertyinfo
+itemschangedeventhandler
+itemscontrol
+itemspaneltemplate
+itemspresenter
+iwin32window
+iwindowtarget
+japanesecalendar
+japaneselunisolarcalendar
+journalentrylistconverter
+journalentryunifiedviewconverter
+jpegbitmapdecoder
+jpegbitmapencoder
+juliancalendar
+jumpitemsrejectedeventargs
+jumpitemsremovedeventargs
+jumplist
+jumppath
+jumptask
+keybinding
+keyboard
+keyboardeventargs
+keyboardeventhandler
+keyboardfocuschangedeventargs
+keyboardfocuschangedeventhandler
+keyboardinputprovideracquirefocuseventargs
+keyboardinputprovideracquirefocuseventhandler
+keycontainerpermission
+keycontainerpermissionaccessentry
+keyconverter
+keyeventargs
+keyeventhandler
+keygesture
+keygestureconverter
+keygesturevalueserializer
+keynotfoundexception
+keypresseventargs
+keypresseventhandler
+keysconverter
+keysizes
+keyspline
+keysplineconverter
+keytimeconverter
+keyvalueconfigurationcollection
+keyvalueconfigurationelement
+keyvalueserializer
+koreancalendar
+koreanlunisolarcalendar
+label
+labelautomationpeer
+labelediteventargs
+labelediteventhandler
+lassoselectionchangedeventhandler
+layoutadornerset
+layouteventargs
+layouteventhandler
+lazy
+ldapstyleuriparser
+lengthconverter
+licensecontext
+licenseexception
+licfilelicenseprovider
+lifetimeservices
+linearbytekeyframe
+linearcolorkeyframe
+lineardecimalkeyframe
+lineardoublekeyframe
+lineargradientbrush
+linearint16keyframe
+linearint32keyframe
+linearint64keyframe
+linearpoint3dkeyframe
+linearpointkeyframe
+linearquaternionkeyframe
+linearrectkeyframe
+linearrotation3dkeyframe
+linearsinglekeyframe
+linearsizekeyframe
+linearthicknesskeyframe
+linearvector3dkeyframe
+linearvectorkeyframe
+linebreak
+linegeometry
+linesegment
+lingeroption
+linkclickedeventargs
+linkclickedeventhandler
+linkconverter
+linkedlist
+linkedlistnode
+linkedresource
+linklabel
+linklabellinkclickedeventargs
+linklabellinkclickedeventhandler
+linktarget
+linktargetcollection
+list
+listbindingconverter
+listbox
+listboxautomationpeer
+listboxitem
+listboxitemautomationpeer
+listboxitemwrapperautomationpeer
+listchangedeventargs
+listchangedeventhandler
+listcollectionview
+listcontrolconverteventargs
+listcontrolconverteventhandler
+listdictionary
+listitem
+listitemstructure
+listsortdescription
+listsortdescriptioncollection
+liststructure
+listview
+listviewautomationpeer
+listviewgroup
+listviewhittestinfo
+listviewitem
+listviewitemconverter
+listviewitemmousehovereventargs
+listviewitemmousehovereventhandler
+listviewitemselectionchangedeventargs
+listviewitemselectionchangedeventhandler
+listviewvirtualitemsselectionrangechangedeventargs
+listviewvirtualitemsselectionrangechangedeventhandler
+liveobjectpropertyvalue
+liveobjectupdate
+liveobjectupdatebatch
+livevalue
+loadcompletedeventhandler
+localcertificateselectioncallback
+localfilesettingsprovider
+localizednamedescriptionpair
+localpropertiesresponse
+lockrecursionexception
+longvalidator
+mactripledes
+mailaddress
+mailaddresscollection
+mailmessage
+mailsettingssectiongroup
+malformedlineexception
+manifestresourceinfo
+manipulationdelta
+manipulationpivot
+manipulationvelocities
+manualresetevent
+manualreseteventslim
+margins
+marginsconverter
+markupsourceinfo
+marshalbyvaluecomponent
+marshaldirectiveexception
+maskedtextbox
+maskedtextprovider
+maskinputrejectedeventargs
+maskinputrejectedeventhandler
+matchevaluator
+materialcollection
+materialgroup
+matrix
+matrix3dconverter
+matrix3dvalueserializer
+matrixanimationusingkeyframes
+matrixanimationusingpath
+matrixcamera
+matrixconverter
+matrixkeyframecollection
+matrixtransform
+matrixtransform3d
+matrixvalueserializer
+md5cng
+md5cryptoserviceprovider
+mdiclient
+measureitemeventargs
+measureitemeventhandler
+mediaelement
+mediaelementautomationpeer
+mediapermission
+mediaplayer
+mediatimeline
+memberaccessexception
+memberfilter
+memberreferenceaction
+memoryfailpoint
+memorymappedfilesecurity
+memorystream
+menuautomationpeer
+menucommand
+menuitem
+menuitemautomationpeer
+menuscrollingvisibilityconverter
+menustrip
+meshgeometry3d
+message
+messagequeue
+messagesurrogatefilter
+metadata
+metafile
+metaheader
+methodaccessexception
+methodcall
+methodcallmessagewrapper
+methodinvoker
+methodresponse
+methodreturnmessagewrapper
+missingfieldexception
+missingmanifestresourceexception
+missingmemberexception
+missingmethodexception
+missingsatelliteassemblyexception
+model3dcollection
+model3dgroup
+modeluielement3d
+modelvisual3d
+modificationinfo
+modifierkeysconverter
+modifierkeysvalueserializer
+moduleelement
+moduleresolveeventhandler
+monthcalendar
+mouseactionconverter
+mouseactionvalueserializer
+mousebinding
+mousebuttoneventargs
+mousebuttoneventhandler
+mouseeventargs
+mouseeventhandler
+mousegesture
+mousegestureconverter
+mousegesturevalueserializer
+mousewheeleventargs
+mousewheeleventhandler
+multibinding
+multicastnotsupportedexception
+multicastoption
+multidatatrigger
+multilinestringconverter
+multipleviewprovider
+multitrigger
+mutationlist
+mutex
+mutexaccessrule
+mutexauditrule
+mutexsecurity
+namedelement
+namedpermissionset
+namedpipeclientstream
+namedpipeserverstream
+namereferenceconverter
+namespacedeclaration
+namespacemapentry
+namespaceresolveeventargs
+nametable
+namevaluecollection
+namevalueconfigurationcollection
+namevalueconfigurationelement
+namevaluefilesectionhandler
+namevaluesectionhandler
+nativewindow
+navigatedeventhandler
+navigateeventargs
+navigateeventhandler
+navigatingcanceleventhandler
+navigationfailedeventhandler
+navigationprogresseventhandler
+navigationstoppedeventhandler
+navigationwindow
+navigationwindowautomationpeer
+negotiatestream
+nestedcontainer
+netcodegroup
+netdatacontractserializer
+netdatacontractserializersection
+netpipestyleuriparser
+netsectiongroup
+nettcpstyleuriparser
+networkaddresschangedeventhandler
+networkavailabilitychangedeventhandler
+networkavailableeventargs
+networkavailableeventhandler
+networkchange
+networkcredential
+networkinformationexception
+networkinformationpermission
+networkstream
+newsstyleuriparser
+noclickablepointexception
+nodelabelediteventargs
+nodelabelediteventhandler
+nodeprocessingcontext
+noopedgegenerator
+nostartupformexception
+notfinitenumberexception
+notifycollectionchangedeventargs
+notifycollectionchangedeventhandler
+notifydataerrorvalidationrule
+notifyicon
+notifyinputeventhandler
+notimplementedexception
+notsupportedexception
+ntaccount
+nullable
+nullableboolconverter
+nullableconverter
+nullextension
+nullreferenceaction
+nullreferenceexception
+numberformatinfo
+numbersubstitution
+numericupdown
+numericupdownacceleration
+numericupdownaccelerationcollection
+objectace
+objectanimationusingkeyframes
+objectcreationdelegate
+objectdataprovider
+objectdisposedexception
+objecthandle
+objectidentityservice
+objectidgenerator
+objectkeyframecollection
+objectmanager
+objecttracker
+objecttype
+objref
+observablecollection
+onapplicationeventresponse
+onxmldictionaryreaderclose
+opacityconverter
+openfiledialog
+openreadcompletedeventhandler
+openwritecompletedeventhandler
+operationcanceledexception
+ordereddictionary
+orthographiccamera
+outboundmessagedata
+outerglowbitmapeffect
+outofmemoryexception
+overflowexception
+overlapped
+packagedigitalsignaturemanager
+packagerelationshipselector
+packwebrequestfactory
+paddingconverter
+pagecontent
+pagefunction
+pageschangedeventargs
+pageschangedeventhandler
+pagesettings
+pagesetupdialog
+paginationprogresseventargs
+paginationprogresseventhandler
+painteventargs
+painteventhandler
+paintvalueeventargs
+panel
+papersize
+papersource
+paragraphstructure
+paralleloptions
+paralleltimeline
+parameterelement
+parameterelementcollection
+parameterizedthreadstart
+parentbasedunfreezer
+parentchildrelation
+parsercontext
+passwordbox
+passwordboxautomationpeer
+passwordderivebytes
+pathdata
+pathfigure
+pathfigurecollection
+pathfigurecollectionconverter
+pathfigurecollectionvalueserializer
+pathgeometry
+pathgradientbrush
+pathsegmentcollection
+pathtoolongexception
+pausestoryboard
+pen
+pendingrequest
+performancecounter
+performancecountercategory
+performancecountermanager
+performancecounterpermission
+performancecounterpermissionentry
+performancecounterselement
+permissionrequestevidence
+permissionset
+persiancalendar
+perspectivecamera
+physicaladdress
+picturebox
+pingcompletedeventhandler
+pingexception
+pingoptions
+pingpayload
+pipeaccessrule
+pipeauditrule
+pipedatabridge
+pipesecurity
+pipestreamimpersonationworker
+pixelformatconverter
+pixelshader
+pkcs1maskgenerationmethod
+platformnotsupportedexception
+playrecordcallback
+pngbitmapdecoder
+pngbitmapencoder
+point
+point3danimation
+point3danimationusingkeyframes
+point3dcollection
+point3dcollectionconverter
+point3dcollectionvalueserializer
+point3dconverter
+point3dkeyframecollection
+point3dvalueserializer
+point4dconverter
+point4dvalueserializer
+pointanimation
+pointanimationusingkeyframes
+pointanimationusingpath
+pointcollection
+pointcollectionconverter
+pointcollectionvalueserializer
+pointconverter
+pointf
+pointhittestparameters
+pointhittestresult
+pointilistconverter
+pointkeyframecollection
+pointlight
+pointvalueserializer
+policyexception
+policystatement
+polybeziersegment
+polygon
+polyline
+polylinesegment
+polyquadraticbeziersegment
+popupeventargs
+popupeventhandler
+positivetimespanvalidator
+powerease
+powermodechangedeventargs
+powermodechangedeventhandler
+predicate
+preprocessinputeventhandler
+previewkeydowneventargs
+previewkeydowneventhandler
+previewpageinfo
+previewprintcontroller
+principalpermission
+printcontrollerwithstatusdialog
+printdialog
+printdialogexception
+printdocument
+printerresolution
+printersettings
+printeventargs
+printeventhandler
+printingpermission
+printpageeventargs
+printpageeventhandler
+printpreviewcontrol
+printpreviewdialog
+prioritybinding
+privatefontcollection
+privilegenotheldexception
+process
+processinputeventhandler
+processmodulecollection
+processstartinfo
+processthreadcollection
+professionalcolortable
+progressbar
+progressbarautomationpeer
+progressbarbrushconverter
+progresschangedeventargs
+progresschangedeventhandler
+propertiesrequestinfo
+propertiestab
+propertychangedcallback
+propertychangedeventargs
+propertychangedeventhandler
+propertychangingeventargs
+propertychangingeventhandler
+propertydatachangedeventargs
+propertydatachangedeventhandler
+propertydefinition
+propertydescriptorcollection
+propertygrid
+propertygridcommands
+propertygroupdescription
+propertymanager
+propertymetadata
+propertymutator
+propertypath
+propertypathconverter
+propertyservice
+propertytabchangedeventargs
+propertytabchangedeventhandler
+propertyvaluechangedeventargs
+propertyvaluechangedeventhandler
+propertyvaluesholder
+propertyvalueuihandler
+propertyvalueuiitem
+propertyvalueuiiteminvokehandler
+protectedconfigurationprovidercollection
+protectedconfigurationsection
+protectedprovidersettings
+protocolhandler
+protocolviolationexception
+providercollection
+providerexception
+providermetadata
+providersettings
+providersettingscollection
+proxyassemblynotloadedexception
+proxyelement
+publickey
+publisher
+publisheridentitypermission
+publishermembershipcondition
+publishlicense
+quadraticbeziersegment
+quadraticease
+quarticease
+quaternionanimation
+quaternionanimationusingkeyframes
+quaternionconverter
+quaternionkeyframecollection
+quaternionrotation3d
+quaternionvalueserializer
+queryaccessibilityhelpeventargs
+queryaccessibilityhelpeventhandler
+querycontinuedrageventargs
+querycontinuedrageventhandler
+querycursoreventargs
+querycursoreventhandler
+querypagesettingseventargs
+querypagesettingseventhandler
+questioneventargs
+questioneventhandler
+queue
+quinticease
+radialgradientbrush
+radiobutton
+radiobuttonautomationpeer
+random
+rangebaseautomationpeer
+rangeremovelist
+rangevalueprovider
+rankexception
+rawacl
+rawsecuritydescriptor
+rayhittestparameters
+rc2cryptoserviceprovider
+readerwriterlock
+readerwriterlockslim
+readonlycollection
+readonlycollectionbuilder
+readonlyobservablecollection
+readonlypermissionset
+rect3dconverter
+rect3dvalueserializer
+rectangle
+rectangleconverter
+rectanglef
+rectanglegeometry
+rectanglestylusshape
+rectanimation
+rectanimationusingkeyframes
+rectconverter
+rectkeyframecollection
+rectvalueserializer
+reference
+referenceconverter
+reflectionpermission
+reflectiontypeloadexception
+refresheventargs
+refresheventhandler
+regex
+regexcompilationinfo
+regexmatchtimeoutexception
+regexstringvalidator
+region
+regioninfo
+registrationservices
+registryaccessrule
+registryauditrule
+registryhive
+registrykey
+registrypermission
+registrysecurity
+relativesource
+remotecertificatevalidationcallback
+remotingexception
+remotingservice
+remotingsurrogateselector
+remotingtimeoutexception
+removechildaction
+removestoryboard
+renamedeventargs
+renamedeventhandler
+rendertargetbitmap
+rendertargetbitmaprequestinfo
+rendertargetbitmapresponseinfo
+repeatbehaviorconverter
+repeatbutton
+repeatbuttonautomationpeer
+requestbringintovieweventhandler
+requestcachepolicy
+requestcachepolicyconverter
+requestcachingsection
+requestnavigateeventargs
+requestnavigateeventhandler
+resizegrip
+resolveeventargs
+resolveeventhandler
+resolvenameeventargs
+resolvenameeventhandler
+resourcedictionary
+resourcedictionaryedgegenerator
+resourcemanager
+resourcepermissionbaseentry
+resourcereader
+resourcereferenceexpressionconverter
+resourcereferencekeynotfoundexception
+resourceset
+resourcewriter
+responsewitherror
+resumestoryboard
+resxdatanode
+resxfileref
+resxresourcereader
+resxresourceset
+resxresourcewriter
+retrievevirtualitemeventargs
+retrievevirtualitemeventhandler
+returneventargs
+returneventhandler
+returnmessage
+rfc2898derivebytes
+richtextbox
+richtextboxautomationpeer
+rightsmanagementexception
+rijndaelmanaged
+ripemd160managed
+rngcryptoserviceprovider
+rootedpathvalidator
+rotatetransform
+rotatetransform3d
+rotation3danimation
+rotation3danimationusingkeyframes
+rotation3dkeyframecollection
+routedcommand
+routedeventargs
+routedeventconverter
+routedeventhandler
+routedpropertychangedeventargs
+routedpropertychangedeventhandler
+routeduicommand
+rowdefinition
+rowstyle
+rsacng
+rsacryptoserviceprovider
+rsaoaepkeyexchangedeformatter
+rsaoaepkeyexchangeformatter
+rsapkcs1keyexchangedeformatter
+rsapkcs1keyexchangeformatter
+rsapkcs1signaturedeformatter
+rsapkcs1signatureformatter
+rsaprotectedconfigurationprovider
+runtimeenvironment
+runtimetype
+runworkercompletedeventargs
+runworkercompletedeventhandler
+safeaccesstokenhandle
+safearrayrankmismatchexception
+safearraytypemismatchexception
+safefilehandle
+safencryptkeyhandle
+safencryptproviderhandle
+safencryptsecrethandle
+safepipehandle
+safeprocesshandle
+saferegistryhandle
+safewaithandle
+savefiledialog
+sbyteconverter
+scaletransform
+scaletransform3d
+schemaimporterextensioncollection
+schemaimporterextensionelement
+schemaimporterextensionelementcollection
+schemaimporterextensionssection
+schemesettingelement
+schemesettingelementcollection
+scrollablecontrol
+scrollbar
+scrollbarautomationpeer
+scrollchangedeventhandler
+scrollcontentpresenter
+scrolleventargs
+scrolleventhandler
+scrollitemprovider
+scrollprovider
+scrollviewer
+scrollviewerautomationpeer
+sdlchannelsink
+sdlchannelsinkprovider
+sealableunfreezer
+searchforvirtualitemeventargs
+searchforvirtualitemeventhandler
+sectionstructure
+securestring
+securityelement
+securityexception
+securityidentifier
+securitypermission
+seekstoryboard
+sehexception
+selectedcellschangedeventargs
+selectedcellschangedeventhandler
+selecteddatescollection
+selectedgriditemchangedeventargs
+selectedgriditemchangedeventhandler
+selectionadornerset
+selectionchangedeventargs
+selectionchangedeventhandler
+selectionitemprovider
+selectionprovider
+selectionrange
+selectionrangeconverter
+selectivescrollinggrid
+semaphore
+semaphoreaccessrule
+semaphoreauditrule
+semaphorefullexception
+semaphoresecurity
+semaphoreslim
+sendcompletedeventhandler
+sendorpostcallback
+sendpacketselement
+separator
+separatorautomationpeer
+serialdatareceivedeventhandler
+serialerrorreceivedeventhandler
+serializationexception
+serializationinfo
+serializationobjectmanager
+serializationsectiongroup
+serializerprovider
+serialpinchangedeventhandler
+serialport
+serverchannelsinkstack
+servercomputer
+serverexception
+serverfault
+servicecontainer
+servicecontroller
+servicecreatorcallback
+servicenamecollection
+servicenameelement
+servicenameelementcollection
+servicepointmanagerelement
+serviceproviders
+servicetype
+sessionendedeventargs
+sessionendedeventhandler
+sessionendingcanceleventhandler
+sessionendingeventargs
+sessionendingeventhandler
+sessionswitcheventargs
+sessionswitcheventhandler
+setadornerstaterequestinfo
+setdispatcheraction
+setinappselectionstaterequestinfo
+setpanzoomtransformrequestinfo
+setpropertyaction
+setpropertyrequestinfo
+setresourcessearchparentaction
+setstoryboardspeedratio
+setter
+setterbasecollection
+settertriggerconditionvalueconverter
+settingchangingeventargs
+settingchangingeventhandler
+settingelement
+settingelementcollection
+settingsattributedictionary
+settingscontext
+settingsloadedeventargs
+settingsloadedeventhandler
+settingsproperty
+settingspropertycollection
+settingspropertyisreadonlyexception
+settingspropertynotfoundexception
+settingspropertyvalue
+settingspropertyvaluecollection
+settingspropertywrongtypeexception
+settingsprovidercollection
+settingssavingeventhandler
+settingssection
+settingvalueelement
+setxamlcontentrequestinfo
+sha1cng
+sha1cryptoserviceprovider
+sha1managed
+sha256cng
+sha256cryptoserviceprovider
+sha256managed
+sha384cng
+sha384cryptoserviceprovider
+sha384managed
+sha512cng
+sha512cryptoserviceprovider
+sha512managed
+shutdowneventhandler
+signaturedescription
+sineease
+singleanimation
+singleanimationusingkeyframes
+singleconverter
+singlekeyframecollection
+singletagsectionhandler
+sinkproviderdata
+siteidentitypermission
+sitemembershipcondition
+size
+size3dconverter
+size3dvalueserializer
+sizeanimation
+sizeanimationusingkeyframes
+sizechangedeventhandler
+sizechangedinfo
+sizeconverter
+sizef
+sizefconverter
+sizekeyframecollection
+sizevalueserializer
+skewtransform
+skipstoryboardtofill
+slider
+sliderautomationpeer
+smtpclient
+smtpexception
+smtpfailedrecipientexception
+smtpfailedrecipientsexception
+smtpnetworkelement
+smtppermission
+smtpsection
+smtpspecifiedpickupdirectoryelement
+soapanyuri
+soapattributeoverrides
+soapattributes
+soapbase64binary
+soapclientformattersink
+soapclientformattersinkprovider
+soapcodeexporter
+soapdate
+soapdatetime
+soapday
+soapduration
+soapentities
+soapentity
+soapfault
+soaphexbinary
+soapid
+soapidref
+soapidrefs
+soapinteger
+soaplanguage
+soapmessage
+soapmonth
+soapmonthday
+soapname
+soapncname
+soapnegativeinteger
+soapnmtoken
+soapnmtokens
+soapnonnegativeinteger
+soapnonpositiveinteger
+soapnormalizedstring
+soapnotation
+soappositiveinteger
+soapqname
+soapreflectionimporter
+soapschemaexporter
+soapschemaimporter
+soapschemamember
+soapserverformattersink
+soapserverformattersinkprovider
+soaptime
+soaptoken
+soapyear
+soapyearmonth
+socket
+socketaddress
+socketasynceventargs
+socketelement
+socketexception
+socketpermission
+solidbrush
+solidcolorbrush
+sortdescriptioncollection
+sorteddictionary
+sortedlist
+sortedset
+sortversion
+soundplayer
+soundplayeraction
+sourcechangedeventargs
+sourcechangedeventhandler
+sourcefilter
+sourceinfo
+sourceswitch
+specialdirectories
+specularmaterial
+splashscreen
+splinebytekeyframe
+splinecolorkeyframe
+splinedecimalkeyframe
+splinedoublekeyframe
+splineint16keyframe
+splineint32keyframe
+splineint64keyframe
+splinepoint3dkeyframe
+splinepointkeyframe
+splinequaternionkeyframe
+splinerectkeyframe
+splinerotation3dkeyframe
+splinesinglekeyframe
+splinesizekeyframe
+splinethicknesskeyframe
+splinevector3dkeyframe
+splinevectorkeyframe
+splitcontainer
+splitter
+splittercanceleventargs
+splittercanceleventhandler
+splittereventargs
+splittereventhandler
+splitterpanel
+spotlight
+sslstream
+stack
+stackframe
+stackoverflowexception
+stackpanel
+stacktrace
+standardcommands
+standardprintcontroller
+standardtoolwindows
+startupeventargs
+startupeventhandler
+startupnextinstanceeventargs
+startupnextinstanceeventhandler
+staticextension
+staticlocalinitflag
+staticreferenceaction
+staticresourceextension
+statusbar
+statusbarautomationpeer
+statusbardrawitemeventargs
+statusbardrawitemeventhandler
+statusbaritem
+statusbaritemautomationpeer
+statusbarpanel
+statusbarpanelclickeventargs
+statusbarpanelclickeventhandler
+statusstrip
+stopstoryboard
+stopwatch
+storecontentchangedeventargs
+storecontentchangedeventhandler
+storepermission
+storyboard
+storybreak
+storyfragment
+storyfragments
+stream
+streamchangecallback
+streamgeometry
+streamreader
+streamresourceinfo
+streamwriter
+stringanimationusingkeyframes
+stringbuilder
+stringcollection
+stringconverter
+stringdictionary
+stringformat
+stringinfo
+stringkeyframecollection
+stringreader
+stringtable
+stringvalidator
+stringwriter
+stroke
+strokecollection
+strokecollectionchangedeventargs
+strokecollectionchangedeventhandler
+strokecollectionconverter
+strokehiteventhandler
+strongbox
+strongname
+strongnameidentitypermission
+strongnamekeypair
+strongnamemembershipcondition
+strongnamepublickeyblob
+structurechangedeventargs
+structurechangedeventhandler
+styleselector
+styleunfreezer
+stylusbuttoneventargs
+stylusbuttoneventhandler
+stylusdowneventargs
+stylusdowneventhandler
+styluseventargs
+styluseventhandler
+styluspointcollection
+styluspointdescription
+styluspointproperty
+styluspointpropertyinfo
+styluspointsreplacedeventargs
+styluspointsreplacedeventhandler
+stylussystemgestureeventargs
+stylussystemgestureeventhandler
+subclasstypevalidator
+surrogateselector
+symdocumenttype
+symlanguagetype
+symlanguagevendor
+synchronizationcontext
+synchronizationlockexception
+synchronizedinputprovider
+systemacl
+systemdrawingsection
+systemdropshadowchrome
+systemexception
+tabcontrol
+tabcontrolautomationpeer
+tabcontrolcanceleventargs
+tabcontrolcanceleventhandler
+tabcontroleventargs
+tabcontroleventhandler
+tabitem
+tabitemautomationpeer
+tabitemwrapperautomationpeer
+tableautomationpeer
+tablecell
+tablecellautomationpeer
+tablecellstructure
+tablecolumn
+tableitemprovider
+tablelayoutcellpainteventargs
+tablelayoutcellpainteventhandler
+tablelayoutcontrolcollection
+tablelayoutpanel
+tablelayoutsettingstypeconverter
+tableprovider
+tablerow
+tablerowgroup
+tablerowgroupstructure
+tablerowstructure
+tablestructure
+tabpage
+tabpanel
+taiwancalendar
+taiwanlunisolarcalendar
+tapattachedevent
+taperroraction
+tapinitializedevent
+tapinstancebuildercontext
+tapinstancemanager
+taplocalevent
+tapproperty
+tappropertysource
+tappropertyvalue
+targetexception
+targetinvocationexception
+targetparametercountexception
+task
+taskbariteminfo
+taskcanceledexception
+taskcompletionsource
+taskfactory
+taskschedulerexception
+tcpchannel
+tcpclient
+tcpclientchannel
+tcplistener
+tcpserverchannel
+tempfilecollection
+templatebindingexpressionconverter
+templatebindingextension
+templatebindingextensionconverter
+templatecontentloader
+templateeventhelper
+templatekeyconverter
+templateresourcehelper
+testasserthelper
+textblock
+textblockautomationpeer
+textbox
+textboxautomationpeer
+textchangedeventargs
+textchangedeventhandler
+textcharacters
+textcomposition
+textcompositioneventargs
+textcompositioneventhandler
+textdecoration
+textdecorationcollection
+textdecorationcollectionconverter
+texteffect
+texteffectcollection
+textelementautomationpeer
+textembeddedobjectmetrics
+textendofline
+textendofparagraph
+textendofsegment
+textfieldparser
+texthidden
+textprovider
+textrange
+textreader
+textruncache
+textsimplemarkerproperties
+textspan
+texttabproperties
+texttrailingcharacterellipsis
+texttrailingwordellipsis
+texturebrush
+textwriter
+textwritertracelistener
+thaibuddhistcalendar
+themedictionaryextension
+thicknessanimation
+thicknessanimationusingkeyframes
+thicknessconverter
+thicknesskeyframecollection
+thread
+threadexceptiondialog
+threadexceptioneventargs
+threadexceptioneventhandler
+threadinterruptedexception
+threadlocal
+threadmessageeventhandler
+threadstart
+threadstateexception
+thumbautomationpeer
+thumbbuttoninfo
+thumbbuttoninfocollection
+tickbar
+tiffbitmapdecoder
+tiffbitmapencoder
+timelinecollection
+timeoutexception
+timer
+timercallback
+timerelapsedeventargs
+timerelapsedeventhandler
+timespan
+timespanconverter
+timespanminutesconverter
+timespanminutesorinfiniteconverter
+timespansecondsconverter
+timespansecondsorinfiniteconverter
+timespanvalidator
+timezonenotfoundexception
+tobase64transform
+togglebutton
+togglebuttonautomationpeer
+toggleprovider
+toolbar
+toolbarautomationpeer
+toolbarbutton
+toolbarbuttonclickeventargs
+toolbarbuttonclickeventhandler
+toolbaroverflowpanel
+toolbarpanel
+toolbartray
+toolboxcomponentscreatedeventargs
+toolboxcomponentscreatedeventhandler
+toolboxcomponentscreatingeventargs
+toolboxcomponentscreatingeventhandler
+toolboxitem
+toolboxitemcollection
+toolboxitemcreatorcallback
+toolstrip
+toolstriparrowrendereventargs
+toolstriparrowrendereventhandler
+toolstripbutton
+toolstripcombobox
+toolstripcontainer
+toolstripcontentpanel
+toolstripcontentpanelrendereventargs
+toolstripcontentpanelrendereventhandler
+toolstripcontrolhost
+toolstripdropdown
+toolstripdropdownbutton
+toolstripdropdownclosedeventargs
+toolstripdropdownclosedeventhandler
+toolstripdropdownclosingeventargs
+toolstripdropdownclosingeventhandler
+toolstripdropdownitemaccessibleobject
+toolstripdropdownmenu
+toolstripgriprendereventargs
+toolstripgriprendereventhandler
+toolstripitem
+toolstripitemclickedeventargs
+toolstripitemclickedeventhandler
+toolstripitemcollection
+toolstripitemeventargs
+toolstripitemeventhandler
+toolstripitemimagerendereventargs
+toolstripitemimagerendereventhandler
+toolstripitemrendereventargs
+toolstripitemrendereventhandler
+toolstripitemtextrendereventargs
+toolstripitemtextrendereventhandler
+toolstriplabel
+toolstripmenuitem
+toolstripoverflow
+toolstrippanel
+toolstrippanelrendereventargs
+toolstrippanelrendereventhandler
+toolstrippanelrow
+toolstripprofessionalrenderer
+toolstripprogressbar
+toolstriprendereventargs
+toolstriprendereventhandler
+toolstripseparator
+toolstripseparatorrendereventargs
+toolstripseparatorrendereventhandler
+toolstripsplitbutton
+toolstripstatuslabel
+toolstripsystemrenderer
+toolstriptextbox
+tooltip
+tooltipautomationpeer
+tooltipeventhandler
+tooltipicon
+toucheventargs
+touchframeeventhandler
+touchpoint
+touchpointcollection
+traceeventcache
+tracesource
+traceswitch
+trackbar
+trackfocusedelementrequestinfo
+trackingservices
+transform3dcollection
+transform3dgroup
+transformcollection
+transformconverter
+transformedbitmap
+transformgroup
+transformprovider
+transformvalueserializer
+translatetransform
+translatetransform3d
+transportheaders
+traversalrequest
+treenode
+treenodeconverter
+treenodemouseclickeventargs
+treenodemouseclickeventhandler
+treenodemousehovereventargs
+treenodemousehovereventhandler
+treeview
+treeviewautomationpeer
+treeviewcanceleventargs
+treeviewcanceleventhandler
+treeviewdataitemautomationpeer
+treevieweventargs
+treevieweventhandler
+treeviewhittestinfo
+treeviewimageindexconverter
+treeviewimagekeyconverter
+treeviewitem
+treeviewitemautomationpeer
+trigger
+triggeractioncollection
+tripledescryptoserviceprovider
+trustmanagercontext
+tuple
+type
+typeaccessexception
+typeconverter
+typeconvertinstanceaction
+typedelegator
+typedescriptorpermission
+typeelement
+typeelementcollection
+typeextension
+typeface
+typefilter
+typehandlerfactory
+typeinitializationexception
+typelibconverter
+typeloadexception
+typenameconverter
+typeservice
+typeunloadedexception
+typevalidationeventargs
+typevalidationeventhandler
+udpclient
+uicueseventargs
+uicueseventhandler
+uielement
+uielement3dautomationpeer
+uielementautomationpeer
+uielementcollection
+uint16
+uint16converter
+uint32
+uint32converter
+uint64
+uint64converter
+uintptr
+uipermission
+uipropertymetadata
+uitypeeditor
+umalquracalendar
+unauthorizedaccessexception
+unescapedxmldiagnosticdata
+unhandledexceptioneventargs
+unhandledexceptioneventhandler
+unicodeencoding
+uniformgrid
+unioncodegroup
+uniqueid
+unknownwrapper
+unmanagedmemoryaccessor
+unmanagedmemorystream
+unobservedtaskexceptioneventargs
+unreferencedobjecteventargs
+unreferencedobjecteventhandler
+unsignedpublishlicense
+updatedictionaryvalueaction
+updateeventhandleraction
+updatesourceexceptionfiltercallback
+updownbase
+updowneventargs
+updowneventhandler
+uploaddatacompletedeventhandler
+uploadfilecompletedeventhandler
+uploadprogresschangedeventhandler
+uploadstringcompletedeventhandler
+uploadvaluescompletedeventhandler
+uri
+uribuilder
+uriformatexception
+urisection
+uritypeconverter
+urlidentitypermission
+urlmembershipcondition
+uselicense
+usercontrol
+usercontrolautomationpeer
+useroptions
+userpreferencechangedeventargs
+userpreferencechangedeventhandler
+userpreferencechangingeventargs
+userpreferencechangingeventhandler
+usersettingsgroup
+ushortilistconverter
+utf32encoding
+utf7encoding
+utf8encoding
+validatevaluecallback
+validationerror
+validationeventhandler
+validationresult
+validatorcallback
+valuebase
+valueprovider
+valueunavailableexception
+variantwrapper
+vbcodeprovider
+vector3danimation
+vector3danimationusingkeyframes
+vector3dcollection
+vector3dcollectionconverter
+vector3dcollectionvalueserializer
+vector3dconverter
+vector3dkeyframecollection
+vector3dvalueserializer
+vectoranimation
+vectoranimationusingkeyframes
+vectorcollection
+vectorcollectionconverter
+vectorcollectionvalueserializer
+vectorconverter
+vectorkeyframecollection
+vectorvalueserializer
+verificationexception
+versioninfo
+videodrawing
+viewbox
+viewport2dvisual3d
+viewport3d
+viewport3dautomationpeer
+viewport3dvisual
+virtualizationcachelengthconverter
+virtualizeditemprovider
+virtualizingstackpanel
+visualbrush
+visualcollection
+visualelement
+visualstate
+visualstategroup
+visualstatemanager
+visualstylerenderer
+visualtarget
+visualtransition
+visualtreechangeeventargs
+visualtreecontext
+visualtreecontextbase
+visualtreemutationevent
+vscrollbar
+vscrollproperties
+waitcallback
+waithandlecannotbeopenedexception
+waitortimercallback
+warningexception
+weakreference
+weakreferencekey
+webbrowser
+webbrowserdocumentcompletedeventargs
+webbrowserdocumentcompletedeventhandler
+webbrowsernavigatedeventargs
+webbrowsernavigatedeventhandler
+webbrowsernavigatingeventargs
+webbrowsernavigatingeventhandler
+webbrowserpermission
+webbrowserprogresschangedeventargs
+webbrowserprogresschangedeventhandler
+webclient
+webexception
+webheadercollection
+webpermission
+webproxy
+webproxyscriptelement
+webrequest
+webrequestmoduleelement
+webrequestmoduleelementcollection
+webrequestmodulessection
+webresponse
+websocket
+websocketexception
+websocketreceiveresult
+webuser
+webutilityelement
+wellknownclienttypeentry
+wellknownservicetypeentry
+whitespacetrimstringconverter
+win32exception
+window
+windowautomationpeer
+windowchrome
+windowclosedeventargs
+windowcollection
+windowinterophelper
+windowprovider
+windowsformsapplicationbase
+windowsformssection
+windowsformssynchronizationcontext
+windowsidentity
+windowsprincipal
+windowsruntimedesignercontext
+wmfplaceablefileheader
+wmpbitmapdecoder
+wmpbitmapencoder
+wpfdependencypropertyvaluesource
+wpffocusprovider
+wpfvisualtreechangeargs
+wpfvisualtreehelper
+wpfxamlgraph
+wrappanel
+writeablebitmap
+writestreamclosedeventargs
+writestreamclosedeventhandler
+writingcancelledeventargs
+writingcancelledeventhandler
+writingcompletedeventargs
+writingcompletedeventhandler
+writingprintticketrequiredeventargs
+writingprintticketrequiredeventhandler
+writingprogresschangedeventargs
+writingprogresschangedeventhandler
+x500distinguishedname
+x509basicconstraintsextension
+x509certificate
+x509certificate2
+x509certificate2collection
+x509certificatecollection
+x509chain
+x509chainpolicy
+x509enhancedkeyusageextension
+x509extension
+x509extensioncollection
+x509keyusageextension
+x509store
+x509subjectkeyidentifierextension
+xamlattachedeventinfo
+xamlbackgroundreader
+xamldesignerserializationmanager
+xamldirective
+xamlduplicatememberexception
+xamledgegenerator
+xamlexception
+xamlinternalexception
+xamlloadpermission
+xamlmember
+xamlmemberinvoker
+xamlnodelist
+xamlnodequeue
+xamlobjecteventargs
+xamlobjectreader
+xamlobjectreaderexception
+xamlobjectreadersettings
+xamlobjectwriter
+xamlobjectwriterexception
+xamlobjectwritersettings
+xamlparseexception
+xamlparseinstanceaction
+xamlpropertyinfo
+xamlreader
+xamlreadersettings
+xamlschemacontext
+xamlschemacontextsettings
+xamlschemaexception
+xamlsetmarkupextensioneventargs
+xamlsettypeconvertereventargs
+xamlsetvalueeventargs
+xamlsourceinfo
+xamltype
+xamltypeinvoker
+xamltypemapper
+xamltypename
+xamltypetypeconverter
+xamlunfreezer
+xamlvalueconverter
+xamlwritersettings
+xamlxmlreader
+xamlxmlreadersettings
+xamlxmlwriter
+xamlxmlwriterexception
+xamlxmlwritersettings
+xdata
+xdocument
+xelement
+xmlanyelementattributes
+xmlarrayitemattributes
+xmlattributeeventhandler
+xmlattributeoverrides
+xmlattributes
+xmlbinaryreadersession
+xmlbinarywritersession
+xmlcodeexporter
+xmlconvert
+xmldataprovider
+xmldictionary
+xmldictionaryreaderquotas
+xmldictionarystring
+xmldocument
+xmlelementattributes
+xmlelementeventhandler
+xmlexception
+xmlimplementation
+xmllanguageconverter
+xmlnamespacemanager
+xmlnamespacemapping
+xmlnamespacemappingcollection
+xmlnametable
+xmlnode
+xmlnodechangedeventargs
+xmlnodechangedeventhandler
+xmlnodeeventhandler
+xmlnodereader
+xmlnsdictionary
+xmlparsercontext
+xmlpreloadedresolver
+xmlqualifiedname
+xmlreader
+xmlreadersection
+xmlreadersettings
+xmlreflectionimporter
+xmlreflectionmember
+xmlschema
+xmlschemaall
+xmlschemaannotated
+xmlschemaannotation
+xmlschemaany
+xmlschemaappinfo
+xmlschemaattributegroup
+xmlschemaattributegroupref
+xmlschemachoice
+xmlschemacollection
+xmlschemacompilationsettings
+xmlschemacomplexcontent
+xmlschemacomplexcontentextension
+xmlschemacomplexcontentrestriction
+xmlschemacomplextype
+xmlschemadocumentation
+xmlschemaelement
+xmlschemaenumerationfacet
+xmlschemaenumerator
+xmlschemaexception
+xmlschemaexporter
+xmlschemafractiondigitsfacet
+xmlschemagroup
+xmlschemagroupref
+xmlschemaidentityconstraint
+xmlschemaimport
+xmlschemaimporter
+xmlschemainclude
+xmlschemainference
+xmlschemainferenceexception
+xmlschemainfo
+xmlschemakey
+xmlschemakeyref
+xmlschemalengthfacet
+xmlschemamaxexclusivefacet
+xmlschemamaxinclusivefacet
+xmlschemamaxlengthfacet
+xmlschemaminexclusivefacet
+xmlschemamininclusivefacet
+xmlschemaminlengthfacet
+xmlschemanotation
+xmlschemaobjectcollection
+xmlschemapatternfacet
+xmlschemaredefine
+xmlschemas
+xmlschemasequence
+xmlschemaset
+xmlschemasimplecontent
+xmlschemasimplecontentextension
+xmlschemasimplecontentrestriction
+xmlschemasimpletype
+xmlschemasimpletypelist
+xmlschemasimpletyperestriction
+xmlschemasimpletypeunion
+xmlschematotaldigitsfacet
+xmlschematype
+xmlschemaunique
+xmlschemavalidationexception
+xmlschemavalidator
+xmlschemawhitespacefacet
+xmlschemaxpath
+xmlsecureresolver
+xmlserializationcollectionfixupcallback
+xmlserializationfixupcallback
+xmlserializationreadcallback
+xmlserializationwritecallback
+xmlserializer
+xmlserializerfactory
+xmlserializernamespaces
+xmlserializersection
+xmlstreamstore
+xmlsyntaxexception
+xmltextreader
+xmltextwriter
+xmlurlresolver
+xmlvalidatingreader
+xmlvaluegetter
+xmlwriter
+xmlwritersettings
+xmlwritertracelistener
+xmlxapresolver
+xname
+xnamespace
+xnode
+xpathdocument
+xpathexception
+xsddatacontractexporter
+xsddatacontractimporter
+xslcompiledtransform
+xsltargumentlist
+xsltcompileexception
+xsltconfigsection
+xsltexception
+xsltmessageencounteredeventhandler
+xsltransform
+xsltsettings
+zoneidentitypermission
+zonemembershipcondition
+zoompercentageconverter
+</a>.Value
+
+#End Region
+
+#Region " Constructors "
+
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <summary>
+        ''' Prevents a default instance of the <see cref="ScintillaNetUtil"/> class from being created.
+        ''' </summary>
+        ''' ----------------------------------------------------------------------------------------------------
+        <DebuggerNonUserCode>
+        Private Sub New()
+        End Sub
+
+#End Region
+
+#Region " Public Methods "
+
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <summary>
+        ''' Sets a VisualBasic.Net dark lexer style on the specified <see cref="Scintilla"/> editor.
+        ''' </summary>
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <param name="editor">
+        ''' The source <see cref="Scintilla"/> editor.
+        ''' </param>
+        ''' ----------------------------------------------------------------------------------------------------
+        <DebuggerStepThrough>
+        Public Shared Sub SetVbNetDarkStyle(ByVal editor As Scintilla)
+
+            Dim backColor As Color = Color.FromArgb(255, 30, 30, 30)
+            Dim selectionColor As Color = Color.FromArgb(255, 38, 79, 120)
+
+            ' Reset the styles.
+            editor.StyleResetDefault()
+            editor.StyleClearAll()
+            ' editor.Styles(Style.[Default]).Font = "Consolas"
+            ' editor.Styles(Style.[Default]).Size = 10
+
+            ' Set the Vb.Net lexer.
+            editor.Lexer = Lexer.Vb
+
+            ' Set folding properties.
+            With editor
+                .SetProperty("fold", "1")
+                .SetProperty("fold.compact", "1")
+                .SetProperty("fold.html", "1")
+            End With
+
+            ' Set the margin for fold markers.
+            With editor
+                ' Activate the line numbers.
+                .Margins(1).Type = MarginType.Number
+                .Margins(1).Cursor = MarginCursor.Arrow
+
+                ' Activate fold markers.
+                .Margins(2).Type = MarginType.Symbol
+                .Margins(2).Mask = Marker.MaskFolders
+                .Margins(2).Cursor = MarginCursor.Arrow
+                .Margins(2).Sensitive = True
+                .Margins(2).Width = 20
+            End With
+
+            ' Reset folder markers.
+            For i As Integer = Marker.FolderEnd To Marker.FolderOpen
+                editor.Markers(i).SetForeColor(Color.Black)
+                editor.Markers(i).SetBackColor(Color.FromArgb(255, 120, 123, 129))
+            Next
+
+            ' Set margin colors.
+            editor.SetFoldMarginColor(True, Color.FromArgb(255, 37, 37, 38))
+            editor.SetFoldMarginHighlightColor(True, Color.FromArgb(255, 37, 37, 38))
+
+            ' Set the style of the folder markers.
+            With editor
+                .Markers(Marker.Folder).Symbol = MarkerSymbol.BoxPlus
+                .Markers(Marker.Folder).SetBackColor(Color.FromArgb(255, 170, 173, 179))
+                .Markers(Marker.FolderOpen).Symbol = MarkerSymbol.BoxMinus
+                .Markers(Marker.FolderEnd).Symbol = MarkerSymbol.BoxPlusConnected
+                .Markers(Marker.FolderEnd).SetBackColor(Color.FromArgb(255, 170, 173, 179))
+                .Markers(Marker.FolderMidTail).Symbol = MarkerSymbol.TCorner
+                .Markers(Marker.FolderOpenMid).Symbol = MarkerSymbol.BoxMinusConnected
+                .Markers(Marker.FolderSub).Symbol = MarkerSymbol.VLine
+                .Markers(Marker.FolderTail).Symbol = MarkerSymbol.LCorner
+            End With
+
+            ' Enable automatic folding
+            editor.AutomaticFold = (AutomaticFold.Show Or AutomaticFold.Click Or AutomaticFold.Change)
+
+            ' Disable whitespaces visibility.
+            editor.ViewWhitespace = WhitespaceMode.Invisible
+
+            ' Set the common editor properties.
+            editor.CaretForeColor = Color.Gainsboro
+            editor.SetSelectionBackColor(True, selectionColor)
+            editor.CaretLineBackColor = Color.FromArgb(255, 45, 45, 48)
+            editor.CaretLineVisible = True
+            editor.CaretStyle = CaretStyle.Line
+            editor.EdgeMode = EdgeMode.None
+            editor.EolMode = Eol.CrLf
+            editor.HScrollBar = True
+            editor.IndentationGuides = IndentView.None
+            editor.LineEndTypesAllowed = LineEndType.Default
+            editor.PasteConvertEndings = True
+            editor.ViewEol = False
+            editor.VScrollBar = True
+
+            ' Set the style of the Vb.Net language.
+            With editor
+                .Styles(Style.Default).BackColor = backColor
+                .Styles(Style.LineNumber).BackColor = Color.FromArgb(255, 37, 37, 38)
+                .Styles(Style.LineNumber).ForeColor = Color.Gainsboro
+                .Styles(Style.LineNumber).Visible = True
+
+                .Styles(Style.Vb.Asm).BackColor = backColor
+                .Styles(Style.Vb.Asm).ForeColor = Color.FromArgb(255, 181, 206, 168)
+                .Styles(Style.Vb.Asm).Bold = True
+                .Styles(Style.Vb.Asm).Italic = False
+                .Styles(Style.Vb.Asm).Underline = False
+
+                .Styles(Style.Vb.BinNumber).BackColor = backColor
+                .Styles(Style.Vb.BinNumber).ForeColor = Color.FromArgb(255, 181, 206, 168)
+                .Styles(Style.Vb.BinNumber).Bold = False
+                .Styles(Style.Vb.BinNumber).Italic = False
+                .Styles(Style.Vb.BinNumber).Underline = False
+
+                .Styles(Style.Vb.Comment).BackColor = backColor
+                .Styles(Style.Vb.Comment).ForeColor = Color.FromArgb(255, 87, 159, 56)
+                .Styles(Style.Vb.Comment).Bold = False
+                .Styles(Style.Vb.Comment).Italic = False
+                .Styles(Style.Vb.Comment).Underline = False
+
+                .Styles(Style.Vb.CommentBlock).BackColor = backColor
+                .Styles(Style.Vb.CommentBlock).ForeColor = Color.FromArgb(255, 87, 159, 56)
+                .Styles(Style.Vb.CommentBlock).Bold = False
+                .Styles(Style.Vb.CommentBlock).Italic = False
+                .Styles(Style.Vb.CommentBlock).Underline = False
+
+                .Styles(Style.Vb.Constant).BackColor = backColor
+                .Styles(Style.Vb.Constant).ForeColor = Color.MediumOrchid
+                .Styles(Style.Vb.Constant).Bold = False
+                .Styles(Style.Vb.Constant).Italic = False
+                .Styles(Style.Vb.Constant).Underline = False
+
+                .Styles(Style.Vb.Date).BackColor = backColor
+                .Styles(Style.Vb.Date).ForeColor = Color.MediumOrchid
+                .Styles(Style.Vb.Date).Bold = False
+                .Styles(Style.Vb.Date).Italic = False
+                .Styles(Style.Vb.Date).Underline = False
+
+                .Styles(Style.Vb.Default).BackColor = backColor
+                .Styles(Style.Vb.Default).ForeColor = Color.LightGray
+                .Styles(Style.Vb.Default).Bold = False
+                .Styles(Style.Vb.Default).Italic = False
+                .Styles(Style.Vb.Default).Underline = False
+
+                .Styles(Style.Vb.DocBlock).BackColor = backColor
+                .Styles(Style.Vb.DocBlock).ForeColor = Color.FromArgb(255, 87, 159, 56)
+                .Styles(Style.Vb.DocBlock).Bold = False
+                .Styles(Style.Vb.DocBlock).Italic = False
+                .Styles(Style.Vb.DocBlock).Underline = False
+
+                .Styles(Style.Vb.DocKeyword).BackColor = backColor
+                .Styles(Style.Vb.DocKeyword).ForeColor = Color.FromArgb(255, 100, 150, 215)
+                .Styles(Style.Vb.DocKeyword).Bold = False
+                .Styles(Style.Vb.DocKeyword).Italic = False
+                .Styles(Style.Vb.DocKeyword).Underline = False
+
+                .Styles(Style.Vb.DocLine).BackColor = backColor
+                .Styles(Style.Vb.DocLine).ForeColor = Color.FromArgb(255, 87, 159, 56)
+                .Styles(Style.Vb.DocLine).Bold = False
+                .Styles(Style.Vb.DocLine).Italic = False
+                .Styles(Style.Vb.DocLine).Underline = False
+
+                .Styles(Style.Vb.Error).BackColor = backColor
+                .Styles(Style.Vb.Error).ForeColor = Color.IndianRed
+                .Styles(Style.Vb.Error).Bold = True
+                .Styles(Style.Vb.Error).Italic = False
+                .Styles(Style.Vb.Error).Underline = False
+
+                .Styles(Style.Vb.HexNumber).BackColor = backColor
+                .Styles(Style.Vb.HexNumber).ForeColor = Color.FromArgb(255, 181, 206, 168)
+                .Styles(Style.Vb.HexNumber).Bold = False
+                .Styles(Style.Vb.HexNumber).Italic = False
+                .Styles(Style.Vb.HexNumber).Underline = False
+
+                .Styles(Style.Vb.Identifier).BackColor = backColor
+                .Styles(Style.Vb.Identifier).ForeColor = Color.Gainsboro
+                .Styles(Style.Vb.Identifier).Bold = False
+                .Styles(Style.Vb.Identifier).Italic = False
+                .Styles(Style.Vb.Identifier).Underline = False
+
+                .Styles(Style.Vb.Keyword).BackColor = backColor
+                .Styles(Style.Vb.Keyword).ForeColor = Color.FromArgb(255, 100, 150, 215)
+                .Styles(Style.Vb.Keyword).Bold = False
+                .Styles(Style.Vb.Keyword).Italic = False
+                .Styles(Style.Vb.Keyword).Underline = False
+
+                .Styles(Style.Vb.Keyword2).BackColor = backColor
+                .Styles(Style.Vb.Keyword2).ForeColor = Color.FromArgb(255, 62, 201, 174)
+                .Styles(Style.Vb.Keyword2).Bold = False
+                .Styles(Style.Vb.Keyword2).Italic = False
+                .Styles(Style.Vb.Keyword2).Underline = False
+
+                .Styles(Style.Vb.Keyword3).BackColor = backColor
+                .Styles(Style.Vb.Keyword3).ForeColor = Color.FromArgb(255, 181, 206, 168)
+                .Styles(Style.Vb.Keyword3).Bold = False
+                .Styles(Style.Vb.Keyword3).Italic = False
+                .Styles(Style.Vb.Keyword3).Underline = False
+
+                .Styles(Style.Vb.Keyword4).BackColor = backColor
+                .Styles(Style.Vb.Keyword4).ForeColor = Color.IndianRed
+                .Styles(Style.Vb.Keyword4).Bold = False
+                .Styles(Style.Vb.Keyword4).Italic = False
+                .Styles(Style.Vb.Keyword4).Underline = False
+
+                .Styles(Style.Vb.Label).BackColor = backColor
+                .Styles(Style.Vb.Label).ForeColor = Color.FromArgb(255, 100, 150, 215)
+                .Styles(Style.Vb.Label).Bold = False
+                .Styles(Style.Vb.Label).Italic = False
+                .Styles(Style.Vb.Label).Underline = False
+
+                .Styles(Style.Vb.Number).BackColor = backColor
+                .Styles(Style.Vb.Number).ForeColor = Color.FromArgb(255, 181, 206, 168)
+                .Styles(Style.Vb.Number).Bold = False
+                .Styles(Style.Vb.Number).Italic = False
+                .Styles(Style.Vb.Number).Underline = False
+
+                .Styles(Style.Vb.Operator).BackColor = backColor
+                ' .Styles(Style.Vb.Operator).ForeColor = Color.DarkKhaki
+                ' .Styles(Style.Vb.Operator).ForeColor = Color.DarkCyan
+                ' .Styles(Style.Vb.Operator).ForeColor = Color.Honeydew
+                ' .Styles(Style.Vb.Operator).ForeColor = Color.LightSteelBlue
+                .Styles(Style.Vb.Operator).ForeColor = Color.LightSlateGray
+                .Styles(Style.Vb.Operator).Bold = True
+                .Styles(Style.Vb.Operator).Italic = False
+                .Styles(Style.Vb.Operator).Underline = False
+
+                .Styles(Style.Vb.Preprocessor).BackColor = backColor
+                ' .Styles(Style.Vb.Preprocessor).ForeColor = Color.HotPink
+                .Styles(Style.Vb.Preprocessor).ForeColor = Color.LightSlateGray
+                .Styles(Style.Vb.Preprocessor).Bold = False
+                .Styles(Style.Vb.Preprocessor).Italic = False
+                .Styles(Style.Vb.Preprocessor).Underline = False
+
+                .Styles(Style.Vb.String).BackColor = backColor
+                .Styles(Style.Vb.String).ForeColor = Color.FromArgb(255, 214, 157, 133)
+                .Styles(Style.Vb.String).Bold = False
+                .Styles(Style.Vb.String).Italic = False
+                .Styles(Style.Vb.String).Underline = False
+
+                .Styles(Style.Vb.StringEol).BackColor = backColor
+                .Styles(Style.Vb.StringEol).ForeColor = Color.Gainsboro
+                .Styles(Style.Vb.StringEol).FillLine = True
+                .Styles(Style.Vb.StringEol).Bold = False
+                .Styles(Style.Vb.StringEol).Italic = False
+                .Styles(Style.Vb.StringEol).Underline = False
+
+            End With
+
+
+            ' Set the Vb.Net keywords.
+            editor.SetKeywords(0, ScintillaNetUtil.vbKeywords)
+            editor.SetKeywords(1, ScintillaNetUtil.netTypeNames)
+            editor.SetKeywords(2, ScintillaNetUtil.vbLiterals)
+            editor.SetKeywords(3, ScintillaNetUtil.vbOther)
+
+        End Sub
+
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <summary>
+        ''' Sets a VisualBasic.Net light lexer style on the specified <see cref="Scintilla"/> editor.
+        ''' </summary>
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <param name="editor">
+        ''' The source <see cref="Scintilla"/> editor.
+        ''' </param>
+        ''' ----------------------------------------------------------------------------------------------------
+        <DebuggerStepThrough>
+        Public Shared Sub SetVbNetLightStyle(ByVal editor As Scintilla)
+
+            Dim backColor As Color = Color.Gainsboro
+            Dim selectionColor As Color = Color.FromArgb(255, 100, 150, 215)
+
+            ' Reset the styles.
+            editor.StyleResetDefault()
+            editor.StyleClearAll()
+            ' editor.Styles(Style.[Default]).Font = "Consolas"
+            ' editor.Styles(Style.[Default]).Size = 10
+
+            ' Set the Vb.Net lexer.
+            editor.Lexer = Lexer.Vb
+
+            ' Set folding properties.
+            With editor
+                .SetProperty("fold", "1")
+                .SetProperty("fold.compact", "1")
+                .SetProperty("fold.html", "1")
+            End With
+
+            ' Set the margin for fold markers.
+            With editor
+                ' Activate the line numbers.
+                .Margins(1).Type = MarginType.Number
+                .Margins(1).Cursor = MarginCursor.Arrow
+
+                ' Activate fold markers.
+                .Margins(2).Type = MarginType.Symbol
+                .Margins(2).Mask = Marker.MaskFolders
+                .Margins(2).Cursor = MarginCursor.Arrow
+                .Margins(2).Sensitive = True
+                .Margins(2).Width = 20
+            End With
+
+            ' Reset folder markers.
+            For i As Integer = Marker.FolderEnd To Marker.FolderOpen
+                editor.Markers(i).SetForeColor(Color.DarkGray)
+                editor.Markers(i).SetBackColor(Color.Black)
+            Next
+
+            ' Set margin colors.
+            editor.SetFoldMarginColor(True, Color.Silver)
+            editor.SetFoldMarginHighlightColor(True, Color.Silver)
+
+            ' Set the style of the folder markers.
+            With editor
+                .Markers(Marker.Folder).Symbol = MarkerSymbol.BoxPlus
+                .Markers(Marker.Folder).SetBackColor(Color.Black)
+                .Markers(Marker.FolderOpen).Symbol = MarkerSymbol.BoxMinus
+                .Markers(Marker.FolderEnd).Symbol = MarkerSymbol.BoxPlusConnected
+                .Markers(Marker.FolderEnd).SetBackColor(Color.Black)
+                .Markers(Marker.FolderMidTail).Symbol = MarkerSymbol.TCorner
+                .Markers(Marker.FolderOpenMid).Symbol = MarkerSymbol.BoxMinusConnected
+                .Markers(Marker.FolderSub).Symbol = MarkerSymbol.VLine
+                .Markers(Marker.FolderTail).Symbol = MarkerSymbol.LCorner
+            End With
+
+            ' Enable automatic folding
+            editor.AutomaticFold = (AutomaticFold.Show Or AutomaticFold.Click Or AutomaticFold.Change)
+
+            ' Disable whitespaces visibility.
+            editor.ViewWhitespace = WhitespaceMode.Invisible
+
+            ' Set the common editor properties.
+            editor.CaretForeColor = Color.Black
+            editor.SetSelectionBackColor(True, selectionColor)
+            editor.CaretLineBackColor = Color.FromArgb(255, 192, 192, 192)
+            editor.CaretLineVisible = True
+            editor.CaretStyle = CaretStyle.Line
+            editor.EdgeMode = EdgeMode.None
+            editor.EolMode = Eol.CrLf
+            editor.HScrollBar = True
+            editor.IndentationGuides = IndentView.None
+            editor.LineEndTypesAllowed = LineEndType.Default
+            editor.PasteConvertEndings = True
+            editor.ViewEol = False
+            editor.VScrollBar = True
+
+            ' Set the style of the Vb.Net language.
+            With editor
+                .Styles(Style.Default).BackColor = backColor
+                .Styles(Style.LineNumber).BackColor = Color.Silver
+                .Styles(Style.LineNumber).ForeColor = Color.Black
+                .Styles(Style.LineNumber).Visible = True
+
+                .Styles(Style.Vb.Asm).BackColor = backColor
+                .Styles(Style.Vb.Asm).ForeColor = Color.OrangeRed
+                .Styles(Style.Vb.Asm).Bold = True
+                .Styles(Style.Vb.Asm).Italic = False
+                .Styles(Style.Vb.Asm).Underline = False
+
+                .Styles(Style.Vb.BinNumber).BackColor = backColor
+                .Styles(Style.Vb.BinNumber).ForeColor = Color.OrangeRed
+                .Styles(Style.Vb.BinNumber).Bold = False
+                .Styles(Style.Vb.BinNumber).Italic = False
+                .Styles(Style.Vb.BinNumber).Underline = False
+
+                .Styles(Style.Vb.Comment).BackColor = backColor
+                .Styles(Style.Vb.Comment).ForeColor = Color.Green
+                .Styles(Style.Vb.Comment).Bold = False
+                .Styles(Style.Vb.Comment).Italic = False
+                .Styles(Style.Vb.Comment).Underline = False
+
+                .Styles(Style.Vb.CommentBlock).BackColor = backColor
+                .Styles(Style.Vb.CommentBlock).ForeColor = Color.Green
+                .Styles(Style.Vb.CommentBlock).Bold = False
+                .Styles(Style.Vb.CommentBlock).Italic = False
+                .Styles(Style.Vb.CommentBlock).Underline = False
+
+                .Styles(Style.Vb.Constant).BackColor = backColor
+                .Styles(Style.Vb.Constant).ForeColor = Color.DarkMagenta
+                .Styles(Style.Vb.Constant).Bold = False
+                .Styles(Style.Vb.Constant).Italic = False
+                .Styles(Style.Vb.Constant).Underline = False
+
+                .Styles(Style.Vb.Date).BackColor = backColor
+                .Styles(Style.Vb.Date).ForeColor = Color.DarkMagenta
+                .Styles(Style.Vb.Date).Bold = False
+                .Styles(Style.Vb.Date).Italic = False
+                .Styles(Style.Vb.Date).Underline = False
+
+                .Styles(Style.Vb.Default).BackColor = backColor
+                .Styles(Style.Vb.Default).ForeColor = Color.Black
+                .Styles(Style.Vb.Default).Bold = False
+                .Styles(Style.Vb.Default).Italic = False
+                .Styles(Style.Vb.Default).Underline = False
+
+                .Styles(Style.Vb.DocBlock).BackColor = backColor
+                .Styles(Style.Vb.DocBlock).ForeColor = Color.Green
+                .Styles(Style.Vb.DocBlock).Bold = False
+                .Styles(Style.Vb.DocBlock).Italic = False
+                .Styles(Style.Vb.DocBlock).Underline = False
+
+                .Styles(Style.Vb.DocKeyword).BackColor = backColor
+                .Styles(Style.Vb.DocKeyword).ForeColor = Color.FromArgb(255, 64, 47, 241)
+                .Styles(Style.Vb.DocKeyword).Bold = False
+                .Styles(Style.Vb.DocKeyword).Italic = False
+                .Styles(Style.Vb.DocKeyword).Underline = False
+
+                .Styles(Style.Vb.DocLine).BackColor = backColor
+                .Styles(Style.Vb.DocLine).ForeColor = Color.Green
+                .Styles(Style.Vb.DocLine).Bold = False
+                .Styles(Style.Vb.DocLine).Italic = False
+                .Styles(Style.Vb.DocLine).Underline = False
+
+                .Styles(Style.Vb.Error).BackColor = backColor
+                .Styles(Style.Vb.Error).ForeColor = Color.DarkRed
+                .Styles(Style.Vb.Error).Bold = True
+                .Styles(Style.Vb.Error).Italic = False
+                .Styles(Style.Vb.Error).Underline = False
+
+                .Styles(Style.Vb.HexNumber).BackColor = backColor
+                .Styles(Style.Vb.HexNumber).ForeColor = Color.DarkOrange
+                .Styles(Style.Vb.HexNumber).Bold = False
+                .Styles(Style.Vb.HexNumber).Italic = False
+                .Styles(Style.Vb.HexNumber).Underline = False
+
+                .Styles(Style.Vb.Identifier).BackColor = backColor
+                .Styles(Style.Vb.Identifier).ForeColor = Color.Black
+                .Styles(Style.Vb.Identifier).Bold = False
+                .Styles(Style.Vb.Identifier).Italic = False
+                .Styles(Style.Vb.Identifier).Underline = False
+
+                .Styles(Style.Vb.Keyword).BackColor = backColor
+                .Styles(Style.Vb.Keyword).ForeColor = Color.FromArgb(255, 72, 64, 213)
+                .Styles(Style.Vb.Keyword).Bold = False
+                .Styles(Style.Vb.Keyword).Italic = False
+                .Styles(Style.Vb.Keyword).Underline = False
+
+                .Styles(Style.Vb.Keyword2).BackColor = backColor
+                .Styles(Style.Vb.Keyword2).ForeColor = Color.DarkCyan
+                .Styles(Style.Vb.Keyword2).Bold = False
+                .Styles(Style.Vb.Keyword2).Italic = False
+                .Styles(Style.Vb.Keyword2).Underline = False
+
+                .Styles(Style.Vb.Keyword3).BackColor = backColor
+                .Styles(Style.Vb.Keyword3).ForeColor = Color.OrangeRed
+                .Styles(Style.Vb.Keyword3).Bold = False
+                .Styles(Style.Vb.Keyword3).Italic = False
+                .Styles(Style.Vb.Keyword3).Underline = False
+
+                .Styles(Style.Vb.Keyword4).BackColor = backColor
+                .Styles(Style.Vb.Keyword4).ForeColor = Color.DarkRed
+                .Styles(Style.Vb.Keyword4).Bold = False
+                .Styles(Style.Vb.Keyword4).Italic = False
+                .Styles(Style.Vb.Keyword4).Underline = False
+
+                .Styles(Style.Vb.Label).BackColor = backColor
+                .Styles(Style.Vb.Label).ForeColor = Color.FromArgb(255, 72, 64, 213)
+                .Styles(Style.Vb.Label).Bold = False
+                .Styles(Style.Vb.Label).Italic = False
+                .Styles(Style.Vb.Label).Underline = False
+
+                .Styles(Style.Vb.Number).BackColor = backColor
+                .Styles(Style.Vb.Number).ForeColor = Color.OrangeRed
+                .Styles(Style.Vb.Number).Bold = False
+                .Styles(Style.Vb.Number).Italic = False
+                .Styles(Style.Vb.Number).Underline = False
+
+                .Styles(Style.Vb.Operator).BackColor = backColor
+                ' .Styles(Style.Vb.Operator).ForeColor = Color.DarkKhaki
+                ' .Styles(Style.Vb.Operator).ForeColor = Color.DarkCyan
+                ' .Styles(Style.Vb.Operator).ForeColor = Color.Honeydew
+                ' .Styles(Style.Vb.Operator).ForeColor = Color.LightSteelBlue
+                .Styles(Style.Vb.Operator).ForeColor = Color.Gray
+                .Styles(Style.Vb.Operator).Bold = True
+                .Styles(Style.Vb.Operator).Italic = False
+                .Styles(Style.Vb.Operator).Underline = False
+
+                .Styles(Style.Vb.Preprocessor).BackColor = backColor
+                ' .Styles(Style.Vb.Preprocessor).ForeColor = Color.HotPink
+                .Styles(Style.Vb.Preprocessor).ForeColor = Color.Gray
+                .Styles(Style.Vb.Preprocessor).Bold = False
+                .Styles(Style.Vb.Preprocessor).Italic = False
+                .Styles(Style.Vb.Preprocessor).Underline = False
+
+                .Styles(Style.Vb.String).BackColor = backColor
+                .Styles(Style.Vb.String).ForeColor = Color.Brown
+                .Styles(Style.Vb.String).Bold = False
+                .Styles(Style.Vb.String).Italic = False
+                .Styles(Style.Vb.String).Underline = False
+
+                .Styles(Style.Vb.StringEol).BackColor = backColor
+                .Styles(Style.Vb.StringEol).ForeColor = Color.Black
+                .Styles(Style.Vb.StringEol).FillLine = True
+                .Styles(Style.Vb.StringEol).Bold = False
+                .Styles(Style.Vb.StringEol).Italic = False
+                .Styles(Style.Vb.StringEol).Underline = False
+
+            End With
+
+            ' Set the Vb.Net keywords.
+            editor.SetKeywords(0, ScintillaNetUtil.vbKeywords)
+            editor.SetKeywords(1, ScintillaNetUtil.netTypeNames)
+            editor.SetKeywords(2, ScintillaNetUtil.vbLiterals)
+            editor.SetKeywords(3, ScintillaNetUtil.vbOther)
+
+        End Sub
+
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <summary>
+        ''' Sets a VisualBasic.Net system-default lexer style on the specified <see cref="Scintilla"/> editor.
+        ''' </summary>
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <param name="editor">
+        ''' The source <see cref="Scintilla"/> editor.
+        ''' </param>
+        ''' ----------------------------------------------------------------------------------------------------
+        <DebuggerStepThrough>
+        Public Shared Sub SetVbNetSystemStyle(ByVal editor As Scintilla)
+
+            Dim backColor As Color = TextBox.DefaultBackColor
+            Dim selectionColor As Color = SystemColors.Highlight
+
+            ' Reset the styles.
+            editor.StyleResetDefault()
+            editor.StyleClearAll()
+            ' editor.Styles(Style.[Default]).Font = "Consolas"
+            ' editor.Styles(Style.[Default]).Size = 10
+
+            ' Set the Vb.Net lexer.
+            editor.Lexer = Lexer.Vb
+
+            ' Set folding properties.
+            With editor
+                .SetProperty("fold", "1")
+                .SetProperty("fold.compact", "1")
+                .SetProperty("fold.html", "1")
+            End With
+
+            ' Set the margin for fold markers.
+            With editor
+                ' Activate the line numbers.
+                .Margins(1).Type = MarginType.Number
+                .Margins(1).Cursor = MarginCursor.Arrow
+
+                ' Activate fold markers.
+                .Margins(2).Type = MarginType.Symbol
+                .Margins(2).Mask = Marker.MaskFolders
+                .Margins(2).Cursor = MarginCursor.Arrow
+                .Margins(2).Sensitive = True
+                .Margins(2).Width = 20
+            End With
+
+            ' Reset folder markers.
+            For i As Integer = Marker.FolderEnd To Marker.FolderOpen
+                editor.Markers(i).SetForeColor(SystemColors.ControlDark)
+                editor.Markers(i).SetBackColor(SystemColors.ControlDarkDark)
+            Next
+
+            ' Set margin colors.
+            editor.SetFoldMarginColor(True, SystemColors.ControlLight)
+            editor.SetFoldMarginHighlightColor(True, SystemColors.ControlLightLight)
+
+            ' Set the style of the folder markers.
+            With editor
+                .Markers(Marker.Folder).Symbol = MarkerSymbol.BoxPlus
+                .Markers(Marker.Folder).SetBackColor(SystemColors.ControlDark)
+                .Markers(Marker.FolderOpen).Symbol = MarkerSymbol.BoxMinus
+                .Markers(Marker.FolderEnd).Symbol = MarkerSymbol.BoxPlusConnected
+                .Markers(Marker.FolderEnd).SetBackColor(SystemColors.ControlDark)
+                .Markers(Marker.FolderMidTail).Symbol = MarkerSymbol.TCorner
+                .Markers(Marker.FolderOpenMid).Symbol = MarkerSymbol.BoxMinusConnected
+                .Markers(Marker.FolderSub).Symbol = MarkerSymbol.VLine
+                .Markers(Marker.FolderTail).Symbol = MarkerSymbol.LCorner
+            End With
+
+            ' Enable automatic folding
+            editor.AutomaticFold = (AutomaticFold.Show Or AutomaticFold.Click Or AutomaticFold.Change)
+
+            ' Disable whitespaces visibility.
+            editor.ViewWhitespace = WhitespaceMode.Invisible
+
+            ' Set the common editor properties.
+            editor.CaretForeColor = SystemColors.ControlDark
+            editor.SetSelectionBackColor(True, selectionColor)
+            editor.CaretLineBackColor = SystemColors.ControlLight
+            editor.CaretLineVisible = True
+            editor.CaretStyle = CaretStyle.Line
+            editor.EdgeMode = EdgeMode.None
+            editor.EolMode = Eol.CrLf
+            editor.HScrollBar = True
+            editor.IndentationGuides = IndentView.None
+            editor.LineEndTypesAllowed = LineEndType.Default
+            editor.PasteConvertEndings = True
+            editor.ViewEol = False
+            editor.VScrollBar = True
+
+            ' Set the style of the Vb.Net language.
+            With editor
+                .Styles(Style.Default).BackColor = backColor
+                .Styles(Style.LineNumber).BackColor = SystemColors.ControlDark
+                .Styles(Style.LineNumber).ForeColor = SystemColors.ControlDarkDark
+                .Styles(Style.LineNumber).Visible = True
+
+                .Styles(Style.Vb.Asm).BackColor = backColor
+                .Styles(Style.Vb.Asm).ForeColor = Color.OrangeRed
+                .Styles(Style.Vb.Asm).Bold = True
+                .Styles(Style.Vb.Asm).Italic = False
+                .Styles(Style.Vb.Asm).Underline = False
+
+                .Styles(Style.Vb.BinNumber).BackColor = backColor
+                .Styles(Style.Vb.BinNumber).ForeColor = Color.OrangeRed
+                .Styles(Style.Vb.BinNumber).Bold = False
+                .Styles(Style.Vb.BinNumber).Italic = False
+                .Styles(Style.Vb.BinNumber).Underline = False
+
+                .Styles(Style.Vb.Comment).BackColor = backColor
+                .Styles(Style.Vb.Comment).ForeColor = Color.Green
+                .Styles(Style.Vb.Comment).Bold = False
+                .Styles(Style.Vb.Comment).Italic = False
+                .Styles(Style.Vb.Comment).Underline = False
+
+                .Styles(Style.Vb.CommentBlock).BackColor = backColor
+                .Styles(Style.Vb.CommentBlock).ForeColor = Color.Green
+                .Styles(Style.Vb.CommentBlock).Bold = False
+                .Styles(Style.Vb.CommentBlock).Italic = False
+                .Styles(Style.Vb.CommentBlock).Underline = False
+
+                .Styles(Style.Vb.Constant).BackColor = backColor
+                .Styles(Style.Vb.Constant).ForeColor = Color.DarkMagenta
+                .Styles(Style.Vb.Constant).Bold = False
+                .Styles(Style.Vb.Constant).Italic = False
+                .Styles(Style.Vb.Constant).Underline = False
+
+                .Styles(Style.Vb.Date).BackColor = backColor
+                .Styles(Style.Vb.Date).ForeColor = Color.DarkMagenta
+                .Styles(Style.Vb.Date).Bold = False
+                .Styles(Style.Vb.Date).Italic = False
+                .Styles(Style.Vb.Date).Underline = False
+
+                .Styles(Style.Vb.Default).BackColor = backColor
+                .Styles(Style.Vb.Default).ForeColor = Color.Black
+                .Styles(Style.Vb.Default).Bold = False
+                .Styles(Style.Vb.Default).Italic = False
+                .Styles(Style.Vb.Default).Underline = False
+
+                .Styles(Style.Vb.DocBlock).BackColor = backColor
+                .Styles(Style.Vb.DocBlock).ForeColor = Color.Green
+                .Styles(Style.Vb.DocBlock).Bold = False
+                .Styles(Style.Vb.DocBlock).Italic = False
+                .Styles(Style.Vb.DocBlock).Underline = False
+
+                .Styles(Style.Vb.DocKeyword).BackColor = backColor
+                .Styles(Style.Vb.DocKeyword).ForeColor = Color.FromArgb(255, 64, 47, 241)
+                .Styles(Style.Vb.DocKeyword).Bold = False
+                .Styles(Style.Vb.DocKeyword).Italic = False
+                .Styles(Style.Vb.DocKeyword).Underline = False
+
+                .Styles(Style.Vb.DocLine).BackColor = backColor
+                .Styles(Style.Vb.DocLine).ForeColor = Color.Green
+                .Styles(Style.Vb.DocLine).Bold = False
+                .Styles(Style.Vb.DocLine).Italic = False
+                .Styles(Style.Vb.DocLine).Underline = False
+
+                .Styles(Style.Vb.Error).BackColor = backColor
+                .Styles(Style.Vb.Error).ForeColor = Color.DarkRed
+                .Styles(Style.Vb.Error).Bold = True
+                .Styles(Style.Vb.Error).Italic = False
+                .Styles(Style.Vb.Error).Underline = False
+
+                .Styles(Style.Vb.HexNumber).BackColor = backColor
+                .Styles(Style.Vb.HexNumber).ForeColor = Color.DarkOrange
+                .Styles(Style.Vb.HexNumber).Bold = False
+                .Styles(Style.Vb.HexNumber).Italic = False
+                .Styles(Style.Vb.HexNumber).Underline = False
+
+                .Styles(Style.Vb.Identifier).BackColor = backColor
+                .Styles(Style.Vb.Identifier).ForeColor = Color.Black
+                .Styles(Style.Vb.Identifier).Bold = False
+                .Styles(Style.Vb.Identifier).Italic = False
+                .Styles(Style.Vb.Identifier).Underline = False
+
+                .Styles(Style.Vb.Keyword).BackColor = backColor
+                .Styles(Style.Vb.Keyword).ForeColor = Color.FromArgb(255, 72, 64, 213)
+                .Styles(Style.Vb.Keyword).Bold = False
+                .Styles(Style.Vb.Keyword).Italic = False
+                .Styles(Style.Vb.Keyword).Underline = False
+
+                .Styles(Style.Vb.Keyword2).BackColor = backColor
+                .Styles(Style.Vb.Keyword2).ForeColor = Color.DarkCyan
+                .Styles(Style.Vb.Keyword2).Bold = False
+                .Styles(Style.Vb.Keyword2).Italic = False
+                .Styles(Style.Vb.Keyword2).Underline = False
+
+                .Styles(Style.Vb.Keyword3).BackColor = backColor
+                .Styles(Style.Vb.Keyword3).ForeColor = Color.OrangeRed
+                .Styles(Style.Vb.Keyword3).Bold = False
+                .Styles(Style.Vb.Keyword3).Italic = False
+                .Styles(Style.Vb.Keyword3).Underline = False
+
+                .Styles(Style.Vb.Keyword4).BackColor = backColor
+                .Styles(Style.Vb.Keyword4).ForeColor = Color.DarkRed
+                .Styles(Style.Vb.Keyword4).Bold = False
+                .Styles(Style.Vb.Keyword4).Italic = False
+                .Styles(Style.Vb.Keyword4).Underline = False
+
+                .Styles(Style.Vb.Label).BackColor = backColor
+                .Styles(Style.Vb.Label).ForeColor = Color.FromArgb(255, 72, 64, 213)
+                .Styles(Style.Vb.Label).Bold = False
+                .Styles(Style.Vb.Label).Italic = False
+                .Styles(Style.Vb.Label).Underline = False
+
+                .Styles(Style.Vb.Number).BackColor = backColor
+                .Styles(Style.Vb.Number).ForeColor = Color.OrangeRed
+                .Styles(Style.Vb.Number).Bold = False
+                .Styles(Style.Vb.Number).Italic = False
+                .Styles(Style.Vb.Number).Underline = False
+
+                .Styles(Style.Vb.Operator).BackColor = backColor
+                ' .Styles(Style.Vb.Operator).ForeColor = Color.DarkKhaki
+                ' .Styles(Style.Vb.Operator).ForeColor = Color.DarkCyan
+                ' .Styles(Style.Vb.Operator).ForeColor = Color.Honeydew
+                ' .Styles(Style.Vb.Operator).ForeColor = Color.LightSteelBlue
+                .Styles(Style.Vb.Operator).ForeColor = Color.Gray
+                .Styles(Style.Vb.Operator).Bold = True
+                .Styles(Style.Vb.Operator).Italic = False
+                .Styles(Style.Vb.Operator).Underline = False
+
+                .Styles(Style.Vb.Preprocessor).BackColor = backColor
+                ' .Styles(Style.Vb.Preprocessor).ForeColor = Color.HotPink
+                .Styles(Style.Vb.Preprocessor).ForeColor = Color.Gray
+                .Styles(Style.Vb.Preprocessor).Bold = False
+                .Styles(Style.Vb.Preprocessor).Italic = False
+                .Styles(Style.Vb.Preprocessor).Underline = False
+
+                .Styles(Style.Vb.String).BackColor = backColor
+                .Styles(Style.Vb.String).ForeColor = Color.Brown
+                .Styles(Style.Vb.String).Bold = False
+                .Styles(Style.Vb.String).Italic = False
+                .Styles(Style.Vb.String).Underline = False
+
+                .Styles(Style.Vb.StringEol).BackColor = backColor
+                .Styles(Style.Vb.StringEol).ForeColor = Color.Black
+                .Styles(Style.Vb.StringEol).FillLine = True
+                .Styles(Style.Vb.StringEol).Bold = False
+                .Styles(Style.Vb.StringEol).Italic = False
+                .Styles(Style.Vb.StringEol).Underline = False
+
+            End With
+
+            ' Set the Vb.Net keywords.
+            editor.SetKeywords(0, ScintillaNetUtil.vbKeywords)
+            editor.SetKeywords(1, ScintillaNetUtil.netTypeNames)
+            editor.SetKeywords(2, ScintillaNetUtil.vbLiterals)
+            editor.SetKeywords(3, ScintillaNetUtil.vbOther)
+
+        End Sub
+
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <summary>
+        ''' Sets a C# dark lexer style on the specified <see cref="Scintilla"/> editor.
+        ''' </summary>
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <param name="editor">
+        ''' The source <see cref="Scintilla"/> editor.
+        ''' </param>
+        ''' ----------------------------------------------------------------------------------------------------
+        <DebuggerStepThrough>
+        Public Shared Sub SetCSharpDarkStyle(ByVal editor As Scintilla)
+
+            Dim backColor As Color = Color.FromArgb(255, 30, 30, 30)
+            Dim selectionColor As Color = Color.FromArgb(255, 38, 79, 120)
+
+            ' Reset the styles.
+            editor.StyleResetDefault()
+            editor.StyleClearAll()
+            ' editor.Styles(Style.[Default]).Font = "Consolas"
+            ' editor.Styles(Style.[Default]).Size = 10
+
+            ' Set the C# lexer.
+            editor.Lexer = Lexer.Cpp
+
+            ' Set folding properties.
+            With editor
+                .SetProperty("fold", "1")
+                .SetProperty("fold.compact", "1")
+                .SetProperty("fold.html", "1")
+            End With
+
+            ' Set the margin for fold markers.
+            With editor
+                ' Activate the line numbers.
+                .Margins(1).Type = MarginType.Number
+                .Margins(1).Cursor = MarginCursor.Arrow
+
+                ' Activate fold markers.
+                .Margins(2).Type = MarginType.Symbol
+                .Margins(2).Mask = Marker.MaskFolders
+                .Margins(2).Cursor = MarginCursor.Arrow
+                .Margins(2).Sensitive = True
+                .Margins(2).Width = 20
+            End With
+
+            ' Reset folder markers.
+            For i As Integer = Marker.FolderEnd To Marker.FolderOpen
+                editor.Markers(i).SetForeColor(Color.Black)
+                editor.Markers(i).SetBackColor(Color.FromArgb(255, 120, 123, 129))
+            Next
+
+            ' Set margin colors.
+            editor.SetFoldMarginColor(True, Color.FromArgb(255, 37, 37, 38))
+            editor.SetFoldMarginHighlightColor(True, Color.FromArgb(255, 37, 37, 38))
+
+            ' Set the style of the folder markers.
+            With editor
+                .Markers(Marker.Folder).Symbol = MarkerSymbol.BoxPlus
+                .Markers(Marker.Folder).SetBackColor(Color.FromArgb(255, 170, 173, 179))
+                .Markers(Marker.FolderOpen).Symbol = MarkerSymbol.BoxMinus
+                .Markers(Marker.FolderEnd).Symbol = MarkerSymbol.BoxPlusConnected
+                .Markers(Marker.FolderEnd).SetBackColor(Color.FromArgb(255, 170, 173, 179))
+                .Markers(Marker.FolderMidTail).Symbol = MarkerSymbol.TCorner
+                .Markers(Marker.FolderOpenMid).Symbol = MarkerSymbol.BoxMinusConnected
+                .Markers(Marker.FolderSub).Symbol = MarkerSymbol.VLine
+                .Markers(Marker.FolderTail).Symbol = MarkerSymbol.LCorner
+            End With
+
+            ' Enable automatic folding
+            editor.AutomaticFold = (AutomaticFold.Show Or AutomaticFold.Click Or AutomaticFold.Change)
+
+            ' Disable whitespaces visibility.
+            editor.ViewWhitespace = WhitespaceMode.Invisible
+
+            ' Set the common editor properties.
+            editor.CaretForeColor = Color.Gainsboro
+            editor.SetSelectionBackColor(True, selectionColor)
+            editor.CaretLineBackColor = Color.FromArgb(255, 45, 45, 48)
+            editor.CaretLineVisible = True
+            editor.CaretStyle = CaretStyle.Line
+            editor.EdgeMode = EdgeMode.None
+            editor.EolMode = Eol.CrLf
+            editor.HScrollBar = True
+            editor.IndentationGuides = IndentView.None
+            editor.LineEndTypesAllowed = LineEndType.Default
+            editor.PasteConvertEndings = True
+            editor.ViewEol = False
+            editor.VScrollBar = True
+
+            ' Set the style of the C# language.
+            With editor
+                .Styles(Style.Default).BackColor = backColor
+                .Styles(Style.LineNumber).BackColor = Color.FromArgb(255, 37, 37, 38)
+                .Styles(Style.LineNumber).ForeColor = Color.Gainsboro
+                .Styles(Style.LineNumber).Visible = True
+
+                .Styles(Style.Cpp.Character).BackColor = backColor
+                .Styles(Style.Cpp.Character).ForeColor = Color.MediumOrchid
+                .Styles(Style.Cpp.Character).Bold = False
+                .Styles(Style.Cpp.Character).Italic = False
+                .Styles(Style.Cpp.Character).Underline = False
+
+                .Styles(Style.Cpp.Comment).BackColor = backColor
+                .Styles(Style.Cpp.Comment).ForeColor = Color.FromArgb(255, 87, 159, 56)
+                .Styles(Style.Cpp.Comment).Bold = False
+                .Styles(Style.Cpp.Comment).Italic = False
+                .Styles(Style.Cpp.Comment).Underline = False
+
+                .Styles(Style.Cpp.CommentDoc).BackColor = backColor
+                .Styles(Style.Cpp.CommentDoc).ForeColor = Color.FromArgb(255, 87, 159, 56)
+                .Styles(Style.Cpp.CommentDoc).Bold = False
+                .Styles(Style.Cpp.CommentDoc).Italic = False
+                .Styles(Style.Cpp.CommentDoc).Underline = False
+
+                .Styles(Style.Cpp.CommentDocKeyword).BackColor = backColor
+                .Styles(Style.Cpp.CommentDocKeyword).ForeColor = Color.FromArgb(255, 87, 159, 56)
+                .Styles(Style.Cpp.CommentDocKeyword).Bold = False
+                .Styles(Style.Cpp.CommentDocKeyword).Italic = False
+                .Styles(Style.Cpp.CommentDocKeyword).Underline = False
+
+                .Styles(Style.Cpp.CommentDocKeywordError).BackColor = backColor
+                .Styles(Style.Cpp.CommentDocKeywordError).ForeColor = Color.FromArgb(255, 87, 159, 56)
+                .Styles(Style.Cpp.CommentDocKeywordError).Bold = False
+                .Styles(Style.Cpp.CommentDocKeywordError).Italic = False
+                .Styles(Style.Cpp.CommentDocKeywordError).Underline = False
+
+                .Styles(Style.Cpp.CommentLine).BackColor = backColor
+                .Styles(Style.Cpp.CommentLine).ForeColor = Color.FromArgb(255, 87, 159, 56)
+                .Styles(Style.Cpp.CommentLine).Bold = False
+                .Styles(Style.Cpp.CommentLine).Italic = False
+                .Styles(Style.Cpp.CommentLine).Underline = False
+
+                .Styles(Style.Cpp.CommentLineDoc).BackColor = backColor
+                .Styles(Style.Cpp.CommentLineDoc).ForeColor = Color.FromArgb(255, 87, 159, 56)
+                .Styles(Style.Cpp.CommentLineDoc).Bold = False
+                .Styles(Style.Cpp.CommentLineDoc).Italic = False
+                .Styles(Style.Cpp.CommentLineDoc).Underline = False
+
+                .Styles(Style.Cpp.Default).BackColor = backColor
+                .Styles(Style.Cpp.Default).ForeColor = Color.LightGray
+                .Styles(Style.Cpp.Default).Bold = False
+                .Styles(Style.Cpp.Default).Italic = False
+                .Styles(Style.Cpp.Default).Underline = False
+
+                .Styles(Style.Cpp.EscapeSequence).BackColor = backColor
+                .Styles(Style.Cpp.EscapeSequence).ForeColor = Color.FromArgb(255, 87, 159, 56)
+                .Styles(Style.Cpp.EscapeSequence).Bold = False
+                .Styles(Style.Cpp.EscapeSequence).Italic = False
+                .Styles(Style.Cpp.EscapeSequence).Underline = False
+
+                .Styles(Style.Cpp.GlobalClass).BackColor = backColor
+                .Styles(Style.Cpp.GlobalClass).ForeColor = Color.FromArgb(255, 100, 150, 215)
+                .Styles(Style.Cpp.GlobalClass).Bold = False
+                .Styles(Style.Cpp.GlobalClass).Italic = False
+                .Styles(Style.Cpp.GlobalClass).Underline = False
+
+                .Styles(Style.Cpp.HashQuotedString).BackColor = backColor
+                .Styles(Style.Cpp.HashQuotedString).ForeColor = Color.FromArgb(255, 87, 159, 56)
+                .Styles(Style.Cpp.HashQuotedString).Bold = False
+                .Styles(Style.Cpp.HashQuotedString).Italic = False
+                .Styles(Style.Cpp.HashQuotedString).Underline = False
+
+                .Styles(Style.Cpp.Identifier).BackColor = backColor
+                .Styles(Style.Cpp.Identifier).ForeColor = Color.Gainsboro
+                .Styles(Style.Cpp.Identifier).Bold = False
+                .Styles(Style.Cpp.Identifier).Italic = False
+                .Styles(Style.Cpp.Identifier).Underline = False
+
+                .Styles(Style.Cpp.Number).BackColor = backColor
+                .Styles(Style.Cpp.Number).ForeColor = Color.FromArgb(255, 181, 206, 168)
+                .Styles(Style.Cpp.Number).Bold = False
+                .Styles(Style.Cpp.Number).Italic = False
+                .Styles(Style.Cpp.Number).Underline = False
+
+                .Styles(Style.Cpp.Operator).BackColor = backColor
+                ' .Styles(Style.Cpp.Operator).ForeColor = Color.DarkKhaki
+                ' .Styles(Style.Cpp.Operator).ForeColor = Color.DarkCyan
+                ' .Styles(Style.Cpp.Operator).ForeColor = Color.Honeydew
+                ' .Styles(Style.Cpp.Operator).ForeColor = Color.LightSteelBlue
+                .Styles(Style.Cpp.Operator).ForeColor = Color.LightSlateGray
+                .Styles(Style.Cpp.Operator).Bold = True
+                .Styles(Style.Cpp.Operator).Italic = False
+                .Styles(Style.Cpp.Operator).Underline = False
+
+                .Styles(Style.Cpp.Preprocessor).BackColor = backColor
+                ' .Styles(Style.Cpp.Preprocessor).ForeColor = Color.HotPink
+                .Styles(Style.Cpp.Preprocessor).ForeColor = Color.LightSlateGray
+                .Styles(Style.Cpp.Preprocessor).Bold = False
+                .Styles(Style.Cpp.Preprocessor).Italic = False
+                .Styles(Style.Cpp.Preprocessor).Underline = False
+
+                .Styles(Style.Cpp.PreprocessorComment).BackColor = backColor
+                .Styles(Style.Cpp.PreprocessorComment).ForeColor = Color.FromArgb(255, 87, 159, 56)
+                .Styles(Style.Cpp.PreprocessorComment).Bold = False
+                .Styles(Style.Cpp.PreprocessorComment).Italic = False
+                .Styles(Style.Cpp.PreprocessorComment).Underline = False
+
+                .Styles(Style.Cpp.PreprocessorCommentDoc).BackColor = backColor
+                .Styles(Style.Cpp.PreprocessorCommentDoc).ForeColor = Color.FromArgb(255, 87, 159, 56)
+                .Styles(Style.Cpp.PreprocessorCommentDoc).Bold = False
+                .Styles(Style.Cpp.PreprocessorCommentDoc).Italic = False
+                .Styles(Style.Cpp.PreprocessorCommentDoc).Underline = False
+
+                .Styles(Style.Cpp.Regex).BackColor = backColor
+                .Styles(Style.Cpp.Regex).ForeColor = Color.FromArgb(255, 214, 157, 133)
+                .Styles(Style.Cpp.Regex).Bold = False
+                .Styles(Style.Cpp.Regex).Italic = False
+                .Styles(Style.Cpp.Regex).Underline = False
+
+                .Styles(Style.Cpp.String).BackColor = backColor
+                .Styles(Style.Cpp.String).ForeColor = Color.FromArgb(255, 214, 157, 133)
+                .Styles(Style.Cpp.String).Bold = False
+                .Styles(Style.Cpp.String).Italic = False
+                .Styles(Style.Cpp.String).Underline = False
+
+                .Styles(Style.Cpp.StringEol).BackColor = backColor
+                .Styles(Style.Cpp.StringEol).ForeColor = Color.Gainsboro
+                .Styles(Style.Cpp.StringEol).FillLine = True
+                .Styles(Style.Cpp.StringEol).Bold = False
+                .Styles(Style.Cpp.StringEol).Italic = False
+                .Styles(Style.Cpp.StringEol).Underline = False
+
+                .Styles(Style.Cpp.StringRaw).BackColor = backColor
+                .Styles(Style.Cpp.StringRaw).ForeColor = Color.FromArgb(255, 214, 157, 133)
+                .Styles(Style.Cpp.StringRaw).Bold = False
+                .Styles(Style.Cpp.StringRaw).Italic = False
+                .Styles(Style.Cpp.StringRaw).Underline = False
+
+                .Styles(Style.Cpp.TaskMarker).BackColor = backColor
+                .Styles(Style.Cpp.TaskMarker).ForeColor = Color.FromArgb(255, 214, 157, 133)
+                .Styles(Style.Cpp.TaskMarker).Bold = False
+                .Styles(Style.Cpp.TaskMarker).Italic = False
+                .Styles(Style.Cpp.TaskMarker).Underline = False
+
+                .Styles(Style.Cpp.TripleVerbatim).BackColor = backColor
+                .Styles(Style.Cpp.TripleVerbatim).ForeColor = Color.FromArgb(255, 214, 157, 133)
+                .Styles(Style.Cpp.TripleVerbatim).Bold = False
+                .Styles(Style.Cpp.TripleVerbatim).Italic = False
+                .Styles(Style.Cpp.TripleVerbatim).Underline = False
+
+                .Styles(Style.Cpp.UserLiteral).BackColor = backColor
+                .Styles(Style.Cpp.UserLiteral).ForeColor = Color.LightGray
+                .Styles(Style.Cpp.UserLiteral).Bold = False
+                .Styles(Style.Cpp.UserLiteral).Italic = False
+                .Styles(Style.Cpp.UserLiteral).Underline = False
+
+                .Styles(Style.Cpp.Uuid).BackColor = backColor
+                .Styles(Style.Cpp.Uuid).ForeColor = Color.LightGray
+                .Styles(Style.Cpp.Uuid).Bold = False
+                .Styles(Style.Cpp.Uuid).Italic = False
+                .Styles(Style.Cpp.Uuid).Underline = False
+
+                .Styles(Style.Cpp.Verbatim).BackColor = backColor
+                .Styles(Style.Cpp.Verbatim).ForeColor = Color.LightGray
+                .Styles(Style.Cpp.Verbatim).Bold = False
+                .Styles(Style.Cpp.Verbatim).Italic = False
+                .Styles(Style.Cpp.Verbatim).Underline = False
+
+                .Styles(Style.Cpp.Word).BackColor = backColor
+                .Styles(Style.Cpp.Word).ForeColor = Color.FromArgb(255, 100, 150, 215)
+                .Styles(Style.Cpp.Word).Bold = False
+                .Styles(Style.Cpp.Word).Italic = False
+                .Styles(Style.Cpp.Word).Underline = False
+
+                .Styles(Style.Cpp.Word2).BackColor = backColor
+                .Styles(Style.Cpp.Word2).ForeColor = Color.FromArgb(255, 100, 150, 215)
+                .Styles(Style.Cpp.Word2).Bold = False
+                .Styles(Style.Cpp.Word2).Italic = False
+                .Styles(Style.Cpp.Word2).Underline = False
+
+            End With
+
+            ' Set the C# keywords.
+            editor.SetKeywords(0, ScintillaNetUtil.csKeywords)
+            editor.SetKeywords(1, ScintillaNetUtil.netTypeNames)
+            ' editor.SetKeywords(2, ScintillaNetUtil.csLiterals)
+            ' editor.SetKeywords(3, ScintillaNetUtil.csbOther)
+
+        End Sub
+
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <summary>
+        ''' Sets a C# light lexer style on the specified <see cref="Scintilla"/> editor.
+        ''' </summary>
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <param name="editor">
+        ''' The source <see cref="Scintilla"/> editor.
+        ''' </param>
+        ''' ----------------------------------------------------------------------------------------------------
+        <DebuggerStepThrough>
+        Public Shared Sub SetCSharpLightStyle(ByVal editor As Scintilla)
+
+            Dim backColor As Color = Color.Gainsboro
+            Dim selectionColor As Color = Color.FromArgb(255, 100, 150, 215)
+
+            ' Reset the styles.
+            editor.StyleResetDefault()
+            editor.StyleClearAll()
+            ' editor.Styles(Style.[Default]).Font = "Consolas"
+            ' editor.Styles(Style.[Default]).Size = 10
+
+            ' Set the C# lexer.
+            editor.Lexer = Lexer.Cpp
+
+            ' Set folding properties.
+            With editor
+                .SetProperty("fold", "1")
+                .SetProperty("fold.compact", "1")
+                .SetProperty("fold.html", "1")
+            End With
+
+            ' Set the margin for fold markers.
+            With editor
+                ' Activate the line numbers.
+                .Margins(1).Type = MarginType.Number
+                .Margins(1).Cursor = MarginCursor.Arrow
+
+                ' Activate fold markers.
+                .Margins(2).Type = MarginType.Symbol
+                .Margins(2).Mask = Marker.MaskFolders
+                .Margins(2).Cursor = MarginCursor.Arrow
+                .Margins(2).Sensitive = True
+                .Margins(2).Width = 20
+            End With
+
+            ' Reset folder markers.
+            For i As Integer = Marker.FolderEnd To Marker.FolderOpen
+                editor.Markers(i).SetForeColor(Color.DarkGray)
+                editor.Markers(i).SetBackColor(Color.Black)
+            Next
+
+            ' Set margin colors.
+            editor.SetFoldMarginColor(True, Color.Silver)
+            editor.SetFoldMarginHighlightColor(True, Color.Silver)
+
+            ' Set the style of the folder markers.
+            With editor
+                .Markers(Marker.Folder).Symbol = MarkerSymbol.BoxPlus
+                .Markers(Marker.Folder).SetBackColor(Color.Black)
+                .Markers(Marker.FolderOpen).Symbol = MarkerSymbol.BoxMinus
+                .Markers(Marker.FolderEnd).Symbol = MarkerSymbol.BoxPlusConnected
+                .Markers(Marker.FolderEnd).SetBackColor(Color.Black)
+                .Markers(Marker.FolderMidTail).Symbol = MarkerSymbol.TCorner
+                .Markers(Marker.FolderOpenMid).Symbol = MarkerSymbol.BoxMinusConnected
+                .Markers(Marker.FolderSub).Symbol = MarkerSymbol.VLine
+                .Markers(Marker.FolderTail).Symbol = MarkerSymbol.LCorner
+            End With
+
+            ' Enable automatic folding
+            editor.AutomaticFold = (AutomaticFold.Show Or AutomaticFold.Click Or AutomaticFold.Change)
+
+            ' Disable whitespaces visibility.
+            editor.ViewWhitespace = WhitespaceMode.Invisible
+
+            ' Set the common editor properties.
+            editor.CaretForeColor = Color.Black
+            editor.SetSelectionBackColor(True, selectionColor)
+            editor.CaretLineBackColor = Color.FromArgb(255, 192, 192, 192)
+            editor.CaretLineVisible = True
+            editor.CaretStyle = CaretStyle.Line
+            editor.EdgeMode = EdgeMode.None
+            editor.EolMode = Eol.CrLf
+            editor.HScrollBar = True
+            editor.IndentationGuides = IndentView.None
+            editor.LineEndTypesAllowed = LineEndType.Default
+            editor.PasteConvertEndings = True
+            editor.ViewEol = False
+            editor.VScrollBar = True
+
+            ' Set the style of the C# language.
+            With editor
+                .Styles(Style.Default).BackColor = backColor
+                .Styles(Style.LineNumber).BackColor = Color.Silver
+                .Styles(Style.LineNumber).ForeColor = Color.Black
+                .Styles(Style.LineNumber).Visible = True
+
+                .Styles(Style.Cpp.Character).BackColor = backColor
+                .Styles(Style.Cpp.Character).ForeColor = Color.MediumOrchid
+                .Styles(Style.Cpp.Character).Bold = False
+                .Styles(Style.Cpp.Character).Italic = False
+                .Styles(Style.Cpp.Character).Underline = False
+
+                .Styles(Style.Cpp.Comment).BackColor = backColor
+                .Styles(Style.Cpp.Comment).ForeColor = Color.Green
+                .Styles(Style.Cpp.Comment).Bold = False
+                .Styles(Style.Cpp.Comment).Italic = False
+                .Styles(Style.Cpp.Comment).Underline = False
+
+                .Styles(Style.Cpp.CommentDoc).BackColor = backColor
+                .Styles(Style.Cpp.CommentDoc).ForeColor = Color.Green
+                .Styles(Style.Cpp.CommentDoc).Bold = False
+                .Styles(Style.Cpp.CommentDoc).Italic = False
+                .Styles(Style.Cpp.CommentDoc).Underline = False
+
+                .Styles(Style.Cpp.CommentDocKeyword).BackColor = backColor
+                .Styles(Style.Cpp.CommentDocKeyword).ForeColor = Color.Green
+                .Styles(Style.Cpp.CommentDocKeyword).Bold = False
+                .Styles(Style.Cpp.CommentDocKeyword).Italic = False
+                .Styles(Style.Cpp.CommentDocKeyword).Underline = False
+
+                .Styles(Style.Cpp.CommentDocKeywordError).BackColor = backColor
+                .Styles(Style.Cpp.CommentDocKeywordError).ForeColor = Color.Green
+                .Styles(Style.Cpp.CommentDocKeywordError).Bold = False
+                .Styles(Style.Cpp.CommentDocKeywordError).Italic = False
+                .Styles(Style.Cpp.CommentDocKeywordError).Underline = False
+
+                .Styles(Style.Cpp.CommentLine).BackColor = backColor
+                .Styles(Style.Cpp.CommentLine).ForeColor = Color.Green
+                .Styles(Style.Cpp.CommentLine).Bold = False
+                .Styles(Style.Cpp.CommentLine).Italic = False
+                .Styles(Style.Cpp.CommentLine).Underline = False
+
+                .Styles(Style.Cpp.CommentLineDoc).BackColor = backColor
+                .Styles(Style.Cpp.CommentLineDoc).ForeColor = Color.Green
+                .Styles(Style.Cpp.CommentLineDoc).Bold = False
+                .Styles(Style.Cpp.CommentLineDoc).Italic = False
+                .Styles(Style.Cpp.CommentLineDoc).Underline = False
+
+                .Styles(Style.Cpp.Default).BackColor = backColor
+                .Styles(Style.Cpp.Default).ForeColor = Color.Black
+                .Styles(Style.Cpp.Default).Bold = False
+                .Styles(Style.Cpp.Default).Italic = False
+                .Styles(Style.Cpp.Default).Underline = False
+
+                .Styles(Style.Cpp.EscapeSequence).BackColor = backColor
+                .Styles(Style.Cpp.EscapeSequence).ForeColor = Color.Brown
+                .Styles(Style.Cpp.EscapeSequence).Bold = False
+                .Styles(Style.Cpp.EscapeSequence).Italic = False
+                .Styles(Style.Cpp.EscapeSequence).Underline = False
+
+                .Styles(Style.Cpp.GlobalClass).BackColor = backColor
+                .Styles(Style.Cpp.GlobalClass).ForeColor = Color.FromArgb(255, 72, 64, 213)
+                .Styles(Style.Cpp.GlobalClass).Bold = False
+                .Styles(Style.Cpp.GlobalClass).Italic = False
+                .Styles(Style.Cpp.GlobalClass).Underline = False
+
+                .Styles(Style.Cpp.HashQuotedString).BackColor = backColor
+                .Styles(Style.Cpp.HashQuotedString).ForeColor = Color.Brown
+                .Styles(Style.Cpp.HashQuotedString).Bold = False
+                .Styles(Style.Cpp.HashQuotedString).Italic = False
+                .Styles(Style.Cpp.HashQuotedString).Underline = False
+
+                .Styles(Style.Cpp.Identifier).BackColor = backColor
+                .Styles(Style.Cpp.Identifier).ForeColor = Color.Black
+                .Styles(Style.Cpp.Identifier).Bold = False
+                .Styles(Style.Cpp.Identifier).Italic = False
+                .Styles(Style.Cpp.Identifier).Underline = False
+
+                .Styles(Style.Cpp.Number).BackColor = backColor
+                .Styles(Style.Cpp.Number).ForeColor = Color.OrangeRed
+                .Styles(Style.Cpp.Number).Bold = False
+                .Styles(Style.Cpp.Number).Italic = False
+                .Styles(Style.Cpp.Number).Underline = False
+
+                .Styles(Style.Cpp.Operator).BackColor = backColor
+                ' .Styles(Style.Cpp.Operator).ForeColor = Color.DarkKhaki
+                ' .Styles(Style.Cpp.Operator).ForeColor = Color.DarkCyan
+                ' .Styles(Style.Cpp.Operator).ForeColor = Color.Honeydew
+                ' .Styles(Style.Cpp.Operator).ForeColor = Color.LightSteelBlue
+                .Styles(Style.Cpp.Operator).ForeColor = Color.Gray
+                .Styles(Style.Cpp.Operator).Bold = True
+                .Styles(Style.Cpp.Operator).Italic = False
+                .Styles(Style.Cpp.Operator).Underline = False
+
+                .Styles(Style.Cpp.Preprocessor).BackColor = backColor
+                ' .Styles(Style.Cpp.Preprocessor).ForeColor = Color.HotPink
+                .Styles(Style.Cpp.Preprocessor).ForeColor = Color.Gray
+                .Styles(Style.Cpp.Preprocessor).Bold = False
+                .Styles(Style.Cpp.Preprocessor).Italic = False
+                .Styles(Style.Cpp.Preprocessor).Underline = False
+
+                .Styles(Style.Cpp.PreprocessorComment).BackColor = backColor
+                .Styles(Style.Cpp.PreprocessorComment).ForeColor = Color.Green
+                .Styles(Style.Cpp.PreprocessorComment).Bold = False
+                .Styles(Style.Cpp.PreprocessorComment).Italic = False
+                .Styles(Style.Cpp.PreprocessorComment).Underline = False
+
+                .Styles(Style.Cpp.PreprocessorCommentDoc).BackColor = backColor
+                .Styles(Style.Cpp.PreprocessorCommentDoc).ForeColor = Color.Green
+                .Styles(Style.Cpp.PreprocessorCommentDoc).Bold = False
+                .Styles(Style.Cpp.PreprocessorCommentDoc).Italic = False
+                .Styles(Style.Cpp.PreprocessorCommentDoc).Underline = False
+
+                .Styles(Style.Cpp.Regex).BackColor = backColor
+                .Styles(Style.Cpp.Regex).ForeColor = Color.Brown
+                .Styles(Style.Cpp.Regex).Bold = False
+                .Styles(Style.Cpp.Regex).Italic = False
+                .Styles(Style.Cpp.Regex).Underline = False
+
+                .Styles(Style.Cpp.String).BackColor = backColor
+                .Styles(Style.Cpp.String).ForeColor = Color.Brown
+                .Styles(Style.Cpp.String).Bold = False
+                .Styles(Style.Cpp.String).Italic = False
+                .Styles(Style.Cpp.String).Underline = False
+
+                .Styles(Style.Cpp.StringEol).BackColor = backColor
+                .Styles(Style.Cpp.StringEol).ForeColor = Color.Black
+                .Styles(Style.Cpp.StringEol).FillLine = True
+                .Styles(Style.Cpp.StringEol).Bold = False
+                .Styles(Style.Cpp.StringEol).Italic = False
+                .Styles(Style.Cpp.StringEol).Underline = False
+
+                .Styles(Style.Cpp.StringRaw).BackColor = backColor
+                .Styles(Style.Cpp.StringRaw).ForeColor = Color.Green
+                .Styles(Style.Cpp.StringRaw).Bold = False
+                .Styles(Style.Cpp.StringRaw).Italic = False
+                .Styles(Style.Cpp.StringRaw).Underline = False
+
+                .Styles(Style.Cpp.TaskMarker).BackColor = backColor
+                .Styles(Style.Cpp.TaskMarker).ForeColor = Color.Black
+                .Styles(Style.Cpp.TaskMarker).Bold = False
+                .Styles(Style.Cpp.TaskMarker).Italic = False
+                .Styles(Style.Cpp.TaskMarker).Underline = False
+
+                .Styles(Style.Cpp.TripleVerbatim).BackColor = backColor
+                .Styles(Style.Cpp.TripleVerbatim).ForeColor = Color.Black
+                .Styles(Style.Cpp.TripleVerbatim).Bold = False
+                .Styles(Style.Cpp.TripleVerbatim).Italic = False
+                .Styles(Style.Cpp.TripleVerbatim).Underline = False
+
+                .Styles(Style.Cpp.UserLiteral).BackColor = backColor
+                .Styles(Style.Cpp.UserLiteral).ForeColor = Color.Black
+                .Styles(Style.Cpp.UserLiteral).Bold = False
+                .Styles(Style.Cpp.UserLiteral).Italic = False
+                .Styles(Style.Cpp.UserLiteral).Underline = False
+
+                .Styles(Style.Cpp.Uuid).BackColor = backColor
+                .Styles(Style.Cpp.Uuid).ForeColor = Color.Black
+                .Styles(Style.Cpp.Uuid).Bold = False
+                .Styles(Style.Cpp.Uuid).Italic = False
+                .Styles(Style.Cpp.Uuid).Underline = False
+
+                .Styles(Style.Cpp.Verbatim).BackColor = backColor
+                .Styles(Style.Cpp.Verbatim).ForeColor = Color.Black
+                .Styles(Style.Cpp.Verbatim).Bold = False
+                .Styles(Style.Cpp.Verbatim).Italic = False
+                .Styles(Style.Cpp.Verbatim).Underline = False
+
+                .Styles(Style.Cpp.Word).BackColor = backColor
+                .Styles(Style.Cpp.Word).ForeColor = Color.FromArgb(255, 72, 64, 213)
+                .Styles(Style.Cpp.Word).Bold = False
+                .Styles(Style.Cpp.Word).Italic = False
+                .Styles(Style.Cpp.Word).Underline = False
+
+                .Styles(Style.Cpp.Word2).BackColor = backColor
+                .Styles(Style.Cpp.Word2).ForeColor = Color.FromArgb(255, 72, 64, 213)
+                .Styles(Style.Cpp.Word2).Bold = False
+                .Styles(Style.Cpp.Word2).Italic = False
+                .Styles(Style.Cpp.Word2).Underline = False
+
+            End With
+
+            ' Set the C# keywords.
+            editor.SetKeywords(0, ScintillaNetUtil.csKeywords)
+            editor.SetKeywords(1, ScintillaNetUtil.netTypeNames)
+            ' editor.SetKeywords(2, ScintillaNetUtil.csLiterals)
+            ' editor.SetKeywords(3, ScintillaNetUtil.csOther)
+
+        End Sub
+
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <summary>
+        ''' Sets a C# system-default lexer style on the specified <see cref="Scintilla"/> editor.
+        ''' </summary>
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <param name="editor">
+        ''' The source <see cref="Scintilla"/> editor.
+        ''' </param>
+        ''' ----------------------------------------------------------------------------------------------------
+        <DebuggerStepThrough>
+        Public Shared Sub SetCSharpSystemStyle(ByVal editor As Scintilla)
+
+            Dim backColor As Color = TextBox.DefaultBackColor
+            Dim selectionColor As Color = SystemColors.Highlight
+
+            ' Reset the styles.
+            editor.StyleResetDefault()
+            editor.StyleClearAll()
+            ' editor.Styles(Style.[Default]).Font = "Consolas"
+            ' editor.Styles(Style.[Default]).Size = 10
+
+            ' Set the C# lexer.
+            editor.Lexer = Lexer.Cpp
+
+            ' Set folding properties.
+            With editor
+                .SetProperty("fold", "1")
+                .SetProperty("fold.compact", "1")
+                .SetProperty("fold.html", "1")
+            End With
+
+            ' Set the margin for fold markers.
+            With editor
+                ' Activate the line numbers.
+                .Margins(1).Type = MarginType.Number
+                .Margins(1).Cursor = MarginCursor.Arrow
+
+                ' Activate fold markers.
+                .Margins(2).Type = MarginType.Symbol
+                .Margins(2).Mask = Marker.MaskFolders
+                .Margins(2).Cursor = MarginCursor.Arrow
+                .Margins(2).Sensitive = True
+                .Margins(2).Width = 20
+            End With
+
+            ' Reset folder markers.
+            For i As Integer = Marker.FolderEnd To Marker.FolderOpen
+                editor.Markers(i).SetForeColor(SystemColors.ControlDark)
+                editor.Markers(i).SetBackColor(SystemColors.ControlDarkDark)
+            Next
+
+            ' Set margin colors.
+            editor.SetFoldMarginColor(True, SystemColors.ControlLight)
+            editor.SetFoldMarginHighlightColor(True, SystemColors.ControlLightLight)
+
+            ' Set the style of the folder markers.
+            With editor
+                .Markers(Marker.Folder).Symbol = MarkerSymbol.BoxPlus
+                .Markers(Marker.Folder).SetBackColor(SystemColors.ControlDark)
+                .Markers(Marker.FolderOpen).Symbol = MarkerSymbol.BoxMinus
+                .Markers(Marker.FolderEnd).Symbol = MarkerSymbol.BoxPlusConnected
+                .Markers(Marker.FolderEnd).SetBackColor(SystemColors.ControlDark)
+                .Markers(Marker.FolderMidTail).Symbol = MarkerSymbol.TCorner
+                .Markers(Marker.FolderOpenMid).Symbol = MarkerSymbol.BoxMinusConnected
+                .Markers(Marker.FolderSub).Symbol = MarkerSymbol.VLine
+                .Markers(Marker.FolderTail).Symbol = MarkerSymbol.LCorner
+            End With
+
+            ' Enable automatic folding
+            editor.AutomaticFold = (AutomaticFold.Show Or AutomaticFold.Click Or AutomaticFold.Change)
+
+            ' Disable whitespaces visibility.
+            editor.ViewWhitespace = WhitespaceMode.Invisible
+
+            ' Set the common editor properties.
+            editor.CaretForeColor = SystemColors.ControlDark
+            editor.SetSelectionBackColor(True, selectionColor)
+            editor.CaretLineBackColor = SystemColors.ControlLight
+            editor.CaretLineVisible = True
+            editor.CaretStyle = CaretStyle.Line
+            editor.EdgeMode = EdgeMode.None
+            editor.EolMode = Eol.CrLf
+            editor.HScrollBar = True
+            editor.IndentationGuides = IndentView.None
+            editor.LineEndTypesAllowed = LineEndType.Default
+            editor.PasteConvertEndings = True
+            editor.ViewEol = False
+            editor.VScrollBar = True
+
+            ' Set the style of the C# language.
+            With editor
+                .Styles(Style.Default).BackColor = backColor
+                .Styles(Style.LineNumber).BackColor = SystemColors.ControlDark
+                .Styles(Style.LineNumber).ForeColor = SystemColors.ControlDarkDark
+                .Styles(Style.LineNumber).Visible = True
+
+                .Styles(Style.Cpp.Character).BackColor = backColor
+                .Styles(Style.Cpp.Character).ForeColor = Color.MediumOrchid
+                .Styles(Style.Cpp.Character).Bold = False
+                .Styles(Style.Cpp.Character).Italic = False
+                .Styles(Style.Cpp.Character).Underline = False
+
+                .Styles(Style.Cpp.Comment).BackColor = backColor
+                .Styles(Style.Cpp.Comment).ForeColor = Color.Green
+                .Styles(Style.Cpp.Comment).Bold = False
+                .Styles(Style.Cpp.Comment).Italic = False
+                .Styles(Style.Cpp.Comment).Underline = False
+
+                .Styles(Style.Cpp.CommentDoc).BackColor = backColor
+                .Styles(Style.Cpp.CommentDoc).ForeColor = Color.Green
+                .Styles(Style.Cpp.CommentDoc).Bold = False
+                .Styles(Style.Cpp.CommentDoc).Italic = False
+                .Styles(Style.Cpp.CommentDoc).Underline = False
+
+                .Styles(Style.Cpp.CommentDocKeyword).BackColor = backColor
+                .Styles(Style.Cpp.CommentDocKeyword).ForeColor = Color.Green
+                .Styles(Style.Cpp.CommentDocKeyword).Bold = False
+                .Styles(Style.Cpp.CommentDocKeyword).Italic = False
+                .Styles(Style.Cpp.CommentDocKeyword).Underline = False
+
+                .Styles(Style.Cpp.CommentDocKeywordError).BackColor = backColor
+                .Styles(Style.Cpp.CommentDocKeywordError).ForeColor = Color.Green
+                .Styles(Style.Cpp.CommentDocKeywordError).Bold = False
+                .Styles(Style.Cpp.CommentDocKeywordError).Italic = False
+                .Styles(Style.Cpp.CommentDocKeywordError).Underline = False
+
+                .Styles(Style.Cpp.CommentLine).BackColor = backColor
+                .Styles(Style.Cpp.CommentLine).ForeColor = Color.Green
+                .Styles(Style.Cpp.CommentLine).Bold = False
+                .Styles(Style.Cpp.CommentLine).Italic = False
+                .Styles(Style.Cpp.CommentLine).Underline = False
+
+                .Styles(Style.Cpp.CommentLineDoc).BackColor = backColor
+                .Styles(Style.Cpp.CommentLineDoc).ForeColor = Color.Green
+                .Styles(Style.Cpp.CommentLineDoc).Bold = False
+                .Styles(Style.Cpp.CommentLineDoc).Italic = False
+                .Styles(Style.Cpp.CommentLineDoc).Underline = False
+
+                .Styles(Style.Cpp.Default).BackColor = backColor
+                .Styles(Style.Cpp.Default).ForeColor = Color.Black
+                .Styles(Style.Cpp.Default).Bold = False
+                .Styles(Style.Cpp.Default).Italic = False
+                .Styles(Style.Cpp.Default).Underline = False
+
+                .Styles(Style.Cpp.EscapeSequence).BackColor = backColor
+                .Styles(Style.Cpp.EscapeSequence).ForeColor = Color.Brown
+                .Styles(Style.Cpp.EscapeSequence).Bold = False
+                .Styles(Style.Cpp.EscapeSequence).Italic = False
+                .Styles(Style.Cpp.EscapeSequence).Underline = False
+
+                .Styles(Style.Cpp.GlobalClass).BackColor = backColor
+                .Styles(Style.Cpp.GlobalClass).ForeColor = Color.FromArgb(255, 72, 64, 213)
+                .Styles(Style.Cpp.GlobalClass).Bold = False
+                .Styles(Style.Cpp.GlobalClass).Italic = False
+                .Styles(Style.Cpp.GlobalClass).Underline = False
+
+                .Styles(Style.Cpp.HashQuotedString).BackColor = backColor
+                .Styles(Style.Cpp.HashQuotedString).ForeColor = Color.Brown
+                .Styles(Style.Cpp.HashQuotedString).Bold = False
+                .Styles(Style.Cpp.HashQuotedString).Italic = False
+                .Styles(Style.Cpp.HashQuotedString).Underline = False
+
+                .Styles(Style.Cpp.Identifier).BackColor = backColor
+                .Styles(Style.Cpp.Identifier).ForeColor = Color.Black
+                .Styles(Style.Cpp.Identifier).Bold = False
+                .Styles(Style.Cpp.Identifier).Italic = False
+                .Styles(Style.Cpp.Identifier).Underline = False
+
+                .Styles(Style.Cpp.Number).BackColor = backColor
+                .Styles(Style.Cpp.Number).ForeColor = Color.OrangeRed
+                .Styles(Style.Cpp.Number).Bold = False
+                .Styles(Style.Cpp.Number).Italic = False
+                .Styles(Style.Cpp.Number).Underline = False
+
+                .Styles(Style.Cpp.Operator).BackColor = backColor
+                ' .Styles(Style.Cpp.Operator).ForeColor = Color.DarkKhaki
+                ' .Styles(Style.Cpp.Operator).ForeColor = Color.DarkCyan
+                ' .Styles(Style.Cpp.Operator).ForeColor = Color.Honeydew
+                ' .Styles(Style.Cpp.Operator).ForeColor = Color.LightSteelBlue
+                .Styles(Style.Cpp.Operator).ForeColor = Color.Gray
+                .Styles(Style.Cpp.Operator).Bold = True
+                .Styles(Style.Cpp.Operator).Italic = False
+                .Styles(Style.Cpp.Operator).Underline = False
+
+                .Styles(Style.Cpp.Preprocessor).BackColor = backColor
+                ' .Styles(Style.Cpp.Preprocessor).ForeColor = Color.HotPink
+                .Styles(Style.Cpp.Preprocessor).ForeColor = Color.Gray
+                .Styles(Style.Cpp.Preprocessor).Bold = False
+                .Styles(Style.Cpp.Preprocessor).Italic = False
+                .Styles(Style.Cpp.Preprocessor).Underline = False
+
+                .Styles(Style.Cpp.PreprocessorComment).BackColor = backColor
+                .Styles(Style.Cpp.PreprocessorComment).ForeColor = Color.Green
+                .Styles(Style.Cpp.PreprocessorComment).Bold = False
+                .Styles(Style.Cpp.PreprocessorComment).Italic = False
+                .Styles(Style.Cpp.PreprocessorComment).Underline = False
+
+                .Styles(Style.Cpp.PreprocessorCommentDoc).BackColor = backColor
+                .Styles(Style.Cpp.PreprocessorCommentDoc).ForeColor = Color.Green
+                .Styles(Style.Cpp.PreprocessorCommentDoc).Bold = False
+                .Styles(Style.Cpp.PreprocessorCommentDoc).Italic = False
+                .Styles(Style.Cpp.PreprocessorCommentDoc).Underline = False
+
+                .Styles(Style.Cpp.Regex).BackColor = backColor
+                .Styles(Style.Cpp.Regex).ForeColor = Color.Brown
+                .Styles(Style.Cpp.Regex).Bold = False
+                .Styles(Style.Cpp.Regex).Italic = False
+                .Styles(Style.Cpp.Regex).Underline = False
+
+                .Styles(Style.Cpp.String).BackColor = backColor
+                .Styles(Style.Cpp.String).ForeColor = Color.Brown
+                .Styles(Style.Cpp.String).Bold = False
+                .Styles(Style.Cpp.String).Italic = False
+                .Styles(Style.Cpp.String).Underline = False
+
+                .Styles(Style.Cpp.StringEol).BackColor = backColor
+                .Styles(Style.Cpp.StringEol).ForeColor = Color.Black
+                .Styles(Style.Cpp.StringEol).FillLine = True
+                .Styles(Style.Cpp.StringEol).Bold = False
+                .Styles(Style.Cpp.StringEol).Italic = False
+                .Styles(Style.Cpp.StringEol).Underline = False
+
+                .Styles(Style.Cpp.StringRaw).BackColor = backColor
+                .Styles(Style.Cpp.StringRaw).ForeColor = Color.Green
+                .Styles(Style.Cpp.StringRaw).Bold = False
+                .Styles(Style.Cpp.StringRaw).Italic = False
+                .Styles(Style.Cpp.StringRaw).Underline = False
+
+                .Styles(Style.Cpp.TaskMarker).BackColor = backColor
+                .Styles(Style.Cpp.TaskMarker).ForeColor = Color.Black
+                .Styles(Style.Cpp.TaskMarker).Bold = False
+                .Styles(Style.Cpp.TaskMarker).Italic = False
+                .Styles(Style.Cpp.TaskMarker).Underline = False
+
+                .Styles(Style.Cpp.TripleVerbatim).BackColor = backColor
+                .Styles(Style.Cpp.TripleVerbatim).ForeColor = Color.Black
+                .Styles(Style.Cpp.TripleVerbatim).Bold = False
+                .Styles(Style.Cpp.TripleVerbatim).Italic = False
+                .Styles(Style.Cpp.TripleVerbatim).Underline = False
+
+                .Styles(Style.Cpp.UserLiteral).BackColor = backColor
+                .Styles(Style.Cpp.UserLiteral).ForeColor = Color.Black
+                .Styles(Style.Cpp.UserLiteral).Bold = False
+                .Styles(Style.Cpp.UserLiteral).Italic = False
+                .Styles(Style.Cpp.UserLiteral).Underline = False
+
+                .Styles(Style.Cpp.Uuid).BackColor = backColor
+                .Styles(Style.Cpp.Uuid).ForeColor = Color.Black
+                .Styles(Style.Cpp.Uuid).Bold = False
+                .Styles(Style.Cpp.Uuid).Italic = False
+                .Styles(Style.Cpp.Uuid).Underline = False
+
+                .Styles(Style.Cpp.Verbatim).BackColor = backColor
+                .Styles(Style.Cpp.Verbatim).ForeColor = Color.Black
+                .Styles(Style.Cpp.Verbatim).Bold = False
+                .Styles(Style.Cpp.Verbatim).Italic = False
+                .Styles(Style.Cpp.Verbatim).Underline = False
+
+                .Styles(Style.Cpp.Word).BackColor = backColor
+                .Styles(Style.Cpp.Word).ForeColor = Color.FromArgb(255, 72, 64, 213)
+                .Styles(Style.Cpp.Word).Bold = False
+                .Styles(Style.Cpp.Word).Italic = False
+                .Styles(Style.Cpp.Word).Underline = False
+
+                .Styles(Style.Cpp.Word2).BackColor = backColor
+                .Styles(Style.Cpp.Word2).ForeColor = Color.FromArgb(255, 72, 64, 213)
+                .Styles(Style.Cpp.Word2).Bold = False
+                .Styles(Style.Cpp.Word2).Italic = False
+                .Styles(Style.Cpp.Word2).Underline = False
+
+            End With
+
+            ' Set the C# keywords.
+            editor.SetKeywords(0, ScintillaNetUtil.csKeywords)
+            editor.SetKeywords(1, ScintillaNetUtil.netTypeNames)
+            ' editor.SetKeywords(2, ScintillaNetUtil.csLiterals)
+            ' editor.SetKeywords(3, ScintillaNetUtil.csOther)
+
+        End Sub
+
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <summary>
+        ''' Adds line numbers on the specified <see cref="Scintilla"/> editor.
+        ''' </summary>
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <param name="editor">
+        ''' The source <see cref="Scintilla"/> editor.
+        ''' </param>
+        ''' 
+        ''' <param name="marginIndex">
+        ''' The margin index of the <see cref="Scintilla.Margins"/> where to display the line numbers.
+        ''' </param>
+        ''' ----------------------------------------------------------------------------------------------------
+        <DebuggerStepThrough>
+        Public Shared Sub AddLineNumbers(ByVal editor As Scintilla, ByVal marginIndex As Integer)
+
+            If ScintillaNetUtil.addLineNumbersDict Is Nothing Then
+                ScintillaNetUtil.addLineNumbersDict = New Dictionary(Of Scintilla, KeyValuePair(Of Integer, Integer))
+            End If
+
+            ScintillaNetUtil.addLineNumbersDict.Add(editor, New KeyValuePair(Of Integer, Integer)(marginIndex, New Integer))
+            AddHandler editor.TextChanged, AddressOf ScintillaNetUtil.AddLineNumbersHandler
+
+        End Sub
+
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <summary>
+        ''' Removes the line numbers on the specified <see cref="Scintilla"/> editor that were previouslly added 
+        ''' by calling <see cref="ScintillaNetUtil.AddLineNumbers"/> method.
+        ''' </summary>
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <param name="editor">
+        ''' The source <see cref="Scintilla"/> editor.
+        ''' </param>
+        ''' 
+        ''' <param name="marginIndex">
+        ''' The margin index of the <see cref="Scintilla.Margins"/> where to remove the line numbers.
+        ''' </param>
+        ''' ----------------------------------------------------------------------------------------------------
+        <DebuggerStepThrough>
+        Public Shared Sub RemoveLineNumbers(ByVal editor As Scintilla, ByVal marginIndex As Integer)
+
+            RemoveHandler editor.TextChanged, AddressOf ScintillaNetUtil.AddLineNumbersHandler
+            ScintillaNetUtil.addLineNumbersDict.Remove(editor)
+
+            editor.Margins(marginIndex).Type = MarginType.Symbol
+
+        End Sub
+
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <summary>
+        ''' Removes the line numbers on the specified <see cref="Scintilla"/> editor that were previouslly added 
+        ''' by calling <see cref="ScintillaNetUtil.AddLineNumbers"/> method.
+        ''' </summary>
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <param name="editor">
+        ''' The source <see cref="Scintilla"/> editor.
+        ''' </param>
+        ''' 
+        ''' <param name="marginIndex">
+        ''' The margin index of the <see cref="Scintilla.Margins"/> where to remove the line numbers.
+        ''' </param>
+        ''' 
+        ''' <param name="marginWidth">
+        ''' Restores the width of the specified <see cref="Scintilla.Margins"/> to the desired value.
+        ''' </param>
+        ''' ----------------------------------------------------------------------------------------------------
+        <DebuggerStepThrough>
+        Public Shared Sub RemoveLineNumbers(ByVal editor As Scintilla, ByVal marginIndex As Integer, ByVal marginWidth As Integer)
+
+            RemoveHandler editor.TextChanged, AddressOf ScintillaNetUtil.AddLineNumbersHandler
+            ScintillaNetUtil.addLineNumbersDict.Remove(editor)
+
+            editor.Margins(marginIndex).Type = MarginType.Symbol
+            editor.Margins(marginIndex).Width = marginWidth
+
+        End Sub
+
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <summary>
+        ''' Supress the print-code for the Control keys pressed in the specified <see cref="Scintilla"/> editor.
+        ''' </summary>
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <param name="editor">
+        ''' The source <see cref="Scintilla"/> editor.
+        ''' </param>
+        ''' ----------------------------------------------------------------------------------------------------
+        <DebuggerStepThrough>
+        Public Shared Sub DisableControlKeysPrint(ByVal editor As Scintilla)
+
+            If ScintillaNetUtil.disableControlKeysPrintList Is Nothing Then
+                ScintillaNetUtil.disableControlKeysPrintList = New List(Of Scintilla)
+            End If
+
+            ScintillaNetUtil.disableControlKeysPrintList.Add(editor)
+            AddHandler editor.KeyPress, AddressOf ScintillaNetUtil.DisableControlKeysPrintHandler
+
+        End Sub
+
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <summary>
+        ''' Enables the print-code for the Control keys pressed in the specified <see cref="Scintilla"/> editor 
+        ''' that were previouslly disabled by calling <see cref="ScintillaNetUtil.DisableControlKeysPrint"/> method.
+        ''' </summary>
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <param name="editor">
+        ''' The source <see cref="Scintilla"/> editor.
+        ''' </param>
+        ''' ----------------------------------------------------------------------------------------------------
+        <DebuggerStepThrough>
+        Public Shared Sub EnableControlKeysPrint(ByVal editor As Scintilla)
+
+            RemoveHandler editor.KeyPress, AddressOf ScintillaNetUtil.DisableControlKeysPrintHandler
+            ScintillaNetUtil.disableControlKeysPrintList.Remove(editor)
+
+        End Sub
+
+#End Region
+
+#Region " Event Handlers "
+
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <summary>
+        ''' Handles the <see cref="Scintilla.TextChanged"/> event of the <see cref="Scintilla"/> control.
+        ''' </summary>
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <param name="sender">
+        ''' The source of the event.
+        ''' </param>
+        ''' 
+        ''' <param name="e">
+        ''' The <see cref="EventArgs"/> instance containing the event data.
+        ''' </param>
+        ''' ----------------------------------------------------------------------------------------------------
+        Private Shared Sub AddLineNumbersHandler(ByVal sender As Object, ByVal e As EventArgs)
+
+            Dim ctrl As Scintilla = DirectCast(sender, Scintilla)
+
+            If ScintillaNetUtil.addLineNumbersDict.ContainsKey(ctrl) Then
+
+                Dim pair As KeyValuePair(Of Integer, Integer) = ScintillaNetUtil.addLineNumbersDict(ctrl) ' marginIndex, newMaxLineNumberCharLength
+
+                ' Did the number of characters in the line number display change?
+                ' i.e. nnn VS nn, or nnnn VS nn, etc...
+                Dim newMaxLineNumberCharLength As Integer = ctrl.Lines.Count.ToString().Length
+                If (newMaxLineNumberCharLength = pair.Value) Then
+                    Exit Sub
+                End If
+
+                ' Calculate the width required to display the last line number
+                ' and include some padding for good measure.
+                Dim padding As Integer = 2
+                ctrl.Margins(pair.Key).Width = ctrl.TextWidth(Style.LineNumber, New String("9"c, newMaxLineNumberCharLength + 1)) + padding
+                addLineNumbersDict(ctrl) = New KeyValuePair(Of Integer, Integer)(pair.Key, newMaxLineNumberCharLength)
+
+            End If
+
+        End Sub
+
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <summary>
+        ''' Handles the <see cref="Scintilla.KeyPress"/> event of the <see cref="Scintilla"/> control.
+        ''' </summary>
+        ''' ----------------------------------------------------------------------------------------------------
+        ''' <param name="sender">
+        ''' The source of the event.
+        ''' </param>
+        ''' 
+        ''' <param name="e">
+        ''' The <see cref="KeyPressEventArgs"/> instance containing the event data.
+        ''' </param>
+        ''' ----------------------------------------------------------------------------------------------------
+        Private Shared Sub DisableControlKeysPrintHandler(ByVal sender As Object, ByVal e As KeyPressEventArgs)
+
+            Dim ctrl As Scintilla = DirectCast(sender, Scintilla)
+
+            If ScintillaNetUtil.disableControlKeysPrintList.Contains(ctrl) Then
+
+                If Convert.ToInt32(e.KeyChar) < 32 Then
+                    ' Prevents Control characters (like CTRL+F) from getting inserted into the text buffer.
+                    e.Handled = True
+                    Exit Sub
+                End If
+
+            End If
+
+        End Sub
+
+#End Region
+
+    End Class
+
+End Namespace
+
+#End Region
