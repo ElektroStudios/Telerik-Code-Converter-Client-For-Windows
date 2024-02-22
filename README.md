@@ -26,17 +26,17 @@ winforms
 
 ## 🖼️ Screenshots
 
-![screenshot](/Images/screenshot1.png)
+![screenshot](/Images/screenshot01.png)
 
-![screenshot](/Images/screenshot2.png)
+![screenshot](/Images/screenshot02.png)
 
-![screenshot](/Images/screenshot3.png)
+![screenshot](/Images/screenshot03.png)
 
-![screenshot](/Images/screenshot4.png)
+![screenshot](/Images/screenshot04.png)
 
-![screenshot](/Images/screenshot5.png)
+![screenshot](/Images/screenshot05.png)
 
-![screenshot](/Images/screenshot6.png)
+![screenshot](/Images/screenshot06.png)
 
 ## 📝 Requirements
 
