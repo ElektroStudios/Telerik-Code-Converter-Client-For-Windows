@@ -3,7 +3,7 @@
 ## v1.1 (2024) *(current)* 🆕
 #### 🛠️ Fixes:
     • Code Converter service stopped working due obsolescence.
-      Now the application rely on https://converter.telerik.com/api/converter/ to fix the issue.
+      Now the application relies on https://converter.telerik.com/api/converter/ to fix the issue.
 #### 🌟 Improvements:
     • Tab control is colorized when applying a visual theme.
 
