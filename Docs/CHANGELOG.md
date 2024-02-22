@@ -1,12 +1,11 @@
-# REPOSITORY NAME Change Log 📋
+# Telerik Code Converter Client for Windows OS Change Log 📋
 
-## v1.1 *(current)* 🆕
-#### 🚀 New Features:
-    • Description
+## v1.1 (2024) *(current)* 🆕
 #### 🛠️ Fixes:
-    • Description
+    • Code Converter service stopped working due obsolescency.
+      Now the application rely on https://converter.telerik.com/api/converter/ to fix the issue.
 #### 🌟 Improvements:
-    • Description
+    • Tab control is colorized when applying a visual theme.
 
-## v1.0 🔄
+## v1.0 (2017) 🔄
 Initial Release.
