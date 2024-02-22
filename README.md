@@ -20,7 +20,7 @@ winforms
 
 # Telerik Code Converter Client for Windows OS
 
-### Desktop application to convert between C#<>VB code using Telerik Code Converter web service.
+### Desktop application to convert code between C#<>VB using Telerik Code Converter web service.
 
 ------------------
 
