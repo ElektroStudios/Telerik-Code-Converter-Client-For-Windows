@@ -24,7 +24,7 @@ winforms
   
   <h1>Telerik Code Converter Desktop Client for Windows</h1>
 
-### Desktop application to convert code between C#<>VB using [Telerik Code Converter web service](https://converter.telerik.com/).
+### Desktop application to convert code between C#<>VB<br>using [Telerik Code Converter web service](https://converter.telerik.com/).
 
 Also available as a Visual Studio extension [here](https://github.com/ElektroStudios/Telerik-Code-Converter-for-Visual-Studio).
 
