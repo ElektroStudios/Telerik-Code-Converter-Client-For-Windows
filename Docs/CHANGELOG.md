@@ -1,4 +1,4 @@
-# Telerik Code Converter Client for Windows OS Change Log 📋
+﻿# Telerik Code Converter Client for Windows OS Change Log 📋
 
 ## v1.1 (2024) *(current)* 🆕
 #### 🛠️ Fixes:
